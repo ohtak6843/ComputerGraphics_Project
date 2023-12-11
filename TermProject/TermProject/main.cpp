@@ -196,7 +196,31 @@ void main(int argc, char** argv) {
 	glutMainLoop(); // 이벤트 처리 시작
 }
 
+void moveGrounds(float x) {
+	for (auto& column_Bground : Bgrounds) {
+		for (auto& row_Bround : column_Bground) {
+			row_Bround.translate(3, { x, 0.0f, 0.0f });
+		}
+	}
 
+	for (auto& column_Tground : Tgrounds) {
+		for (auto& row_Tround : column_Tground) {
+			row_Tround.translate(3, { x, 0.0f, 0.0f });
+		}
+	}
+
+	for (auto& column_Lground : Lgrounds) {
+		for (auto& row_Lround : column_Lground) {
+			row_Lround.translate(3, { x, 0.0f, 0.0f });
+		}
+	}
+
+	for (auto& column_Rground : Rgrounds) {
+		for (auto& row_Rround : column_Rground) {
+			row_Rround.translate(3, { x, 0.0f, 0.0f });
+		}
+	}
+}
 //--- 콜백 함수: 그리기 콜백 함수
 GLvoid drawScene() {
 	glClearColor(rColor, gColor, bColor, 1.0f);
@@ -274,6 +298,12 @@ GLvoid Keyboard(unsigned char key, int x, int y) {
 		break;
 	case 'q':
 		exit(0);
+		break;
+	case 'a':
+		moveGrounds(0.5);
+		break;
+	case 'd':
+		moveGrounds(-0.5);
 		break;
 	default:
 		break;
