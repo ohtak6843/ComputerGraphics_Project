@@ -199,24 +199,28 @@ void main(int argc, char** argv) {
 void moveGrounds(float x) {
 	for (auto& column_Bground : Bgrounds) {
 		for (auto& row_Bround : column_Bground) {
+			row_Bround.initMatrix(3);
 			row_Bround.translate(3, { x, 0.0f, 0.0f });
 		}
 	}
 
 	for (auto& column_Tground : Tgrounds) {
 		for (auto& row_Tround : column_Tground) {
+			row_Tround.initMatrix(3);
 			row_Tround.translate(3, { x, 0.0f, 0.0f });
 		}
 	}
 
 	for (auto& column_Lground : Lgrounds) {
 		for (auto& row_Lround : column_Lground) {
+			row_Lround.initMatrix(3);
 			row_Lround.translate(3, { x, 0.0f, 0.0f });
 		}
 	}
 
 	for (auto& column_Rground : Rgrounds) {
 		for (auto& row_Rround : column_Rground) {
+			row_Rround.initMatrix(3);
 			row_Rround.translate(3, { x, 0.0f, 0.0f });
 		}
 	}
@@ -300,10 +304,10 @@ GLvoid Keyboard(unsigned char key, int x, int y) {
 		exit(0);
 		break;
 	case 'a':
-		moveGrounds(0.5);
+		moveGrounds(0.5f);
 		break;
 	case 'd':
-		moveGrounds(-0.5);
+		moveGrounds(-0.5f);
 		break;
 	default:
 		break;
