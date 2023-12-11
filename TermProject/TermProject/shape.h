@@ -1,5 +1,6 @@
 #pragma once
 #include "display.h"
+#include "struct.h"
 
 #include <gl/glew.h> // 필요한 헤더파일 include
 #include <gl/freeglut.h>
@@ -20,6 +21,8 @@ protected:
 	std::vector<GLfloat> normal;
 	std::vector<GLfloat> texCoord;
 	std::vector<glm::mat4> matrix;
+
+	BB bb;
 
 public:
 	std::vector<GLfloat> color;
@@ -74,4 +77,6 @@ public:
 
 
 	void initMatrix(const unsigned int _idx);
+
+	BB get_bb();
 };

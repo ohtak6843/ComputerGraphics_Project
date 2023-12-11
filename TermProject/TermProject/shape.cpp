@@ -7,6 +7,8 @@
 
 Shape::Shape() {
 	vao = vbo[0] = vbo[1] = vbo[2] = vbo[3] = NULL;
+
+	bb = { 0 };
 }
 
 
@@ -17,6 +19,8 @@ Shape::Shape(std::vector<GLfloat> _vertex, std::vector<GLfloat> _normal, std::ve
 	normal = _normal;
 	color = _color;
 	texCoord = _texCoord;
+
+	bb = { 0 };
 }
 
 
@@ -24,6 +28,8 @@ Shape::Shape(const char* _obj) {
 	vao = vbo[0] = vbo[1] = vbo[2] = NULL;
 
 	Shape::read_obj(_obj);
+
+	bb = { 0 };
 }
 
 
@@ -279,6 +285,29 @@ void Shape::initMatrix() {
 	}
 }
 
+
 void Shape::initMatrix(const unsigned int _idx) {
+	while (matrix.size() <= _idx) {
+		matrix.push_back(glm::mat4(1.0f));
+	}
+
 	matrix[_idx] = glm::mat4(1.0f);
+}
+
+
+BB Shape::get_bb() {
+	glm::vec3 LTF = { bb.left, bb.top, bb.front };  // Left, Top, Front
+	glm::vec3 RBB = { bb.right, bb.bottom, bb.back };  // Right, Bottom, Back
+
+	glm::mat4 result_matrix = glm::mat4(1.0f);
+	for (int i = 0; i < matrix.size(); i++) {
+		result_matrix = matrix[i] * result_matrix;
+	}
+
+	LTF = glm::vec3(result_matrix* glm::vec4(LTF, 1.0f));
+	RBB = glm::vec3(result_matrix* glm::vec4(RBB, 1.0f));
+
+	BB temp_bb = { LTF.x, RBB.x, LTF.y, RBB.y, LTF.z, RBB.z };
+
+	return temp_bb;
 }

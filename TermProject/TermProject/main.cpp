@@ -7,6 +7,7 @@
 #include "shader.h"
 #include "shape.h"
 #include "stb_image.h"
+#include "struct.h"
 
 
 #include <gl/glew.h> // 필요한 헤더파일 include
@@ -23,6 +24,136 @@
 #include <math.h>
 #include <vector>
 #include <algorithm>
+
+
+class Player : public Shape {
+private:
+
+public:
+
+	Player() {
+		vao = vbo[0] = vbo[1] = vbo[2] = vbo[3] = NULL;
+
+		bb = { -1.0f, 1.0f, 1.0f, -1.0f, 1.0f, -1.0f };
+	}
+
+	Player(std::vector<GLfloat> _vertex, std::vector<GLfloat> _normal, std::vector<GLfloat> _color, std::vector<GLfloat> _texCoord) {
+		vao = vbo[0] = vbo[1] = vbo[2] = vbo[3] = NULL;
+
+		vertex = _vertex;
+		normal = _normal;
+		color = _color;
+		texCoord = _texCoord;
+
+		bb = { -1.0f, 1.0f, 1.0f, -1.0f, 1.0f, -1.0f };
+	}
+
+	Player(const char* _obj) {
+		vao = vbo[0] = vbo[1] = vbo[2] = vbo[3] = NULL;
+
+		Shape::read_obj(_obj);
+
+		bb = { -1.0f, 1.0f, 1.0f, -1.0f, 1.0f, -1.0f };
+	}
+};
+
+
+class Ground : public Shape {
+private:
+	int time;
+
+public:
+
+	Ground() {
+		vao = vbo[0] = vbo[1] = vbo[2] = vbo[3] = NULL;
+
+		bb = { -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, -1.0f };
+	}
+
+	Ground(std::vector<GLfloat> _vertex, std::vector<GLfloat> _normal, std::vector<GLfloat> _color, std::vector<GLfloat> _texCoord) {
+		vao = vbo[0] = vbo[1] = vbo[2] = vbo[3] = NULL;
+
+		vertex = _vertex;
+		normal = _normal;
+		color = _color;
+		texCoord = _texCoord;
+
+		bb = { -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, -1.0f };
+	}
+
+	Ground(const char* _obj) {
+		vao = vbo[0] = vbo[1] = vbo[2] = vbo[3] = NULL;
+
+		Shape::read_obj(_obj);
+
+		bb = { -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, -1.0f };
+	}
+};
+
+
+class Meteor : public Shape {
+private:
+	int time;
+
+public:
+
+	Meteor() {
+		vao = vbo[0] = vbo[1] = vbo[2] = vbo[3] = NULL;
+
+		bb = { -1.0f, 1.0f, 1.0f, -1.0f, 1.0f, -1.0f };
+	}
+
+	Meteor(std::vector<GLfloat> _vertex, std::vector<GLfloat> _normal, std::vector<GLfloat> _color, std::vector<GLfloat> _texCoord) {
+		vao = vbo[0] = vbo[1] = vbo[2] = vbo[3] = NULL;
+
+		vertex = _vertex;
+		normal = _normal;
+		color = _color;
+		texCoord = _texCoord;
+
+		bb = { -1.0f, 1.0f, 1.0f, -1.0f, 1.0f, -1.0f };
+	}
+
+	Meteor(const char* _obj) {
+		vao = vbo[0] = vbo[1] = vbo[2] = vbo[3] = NULL;
+
+		Shape::read_obj(_obj);
+
+		bb = { -1.0f, 1.0f, 1.0f, -1.0f, 1.0f, -1.0f };
+	}
+};
+
+
+class Item : public Shape {
+private:
+
+public:
+
+	Item() {
+		vao = vbo[0] = vbo[1] = vbo[2] = vbo[3] = NULL;
+
+		bb = { -1.0f, 1.0f, 1.0f, -1.0f, 1.0f, -1.0f };
+	}
+
+	Item(std::vector<GLfloat> _vertex, std::vector<GLfloat> _normal, std::vector<GLfloat> _color, std::vector<GLfloat> _texCoord) {
+		vao = vbo[0] = vbo[1] = vbo[2] = vbo[3] = NULL;
+
+		vertex = _vertex;
+		normal = _normal;
+		color = _color;
+		texCoord = _texCoord;
+
+		bb = { -1.0f, 1.0f, 1.0f, -1.0f, 1.0f, -1.0f };
+	}
+
+	Item(const char* _obj) {
+		vao = vbo[0] = vbo[1] = vbo[2] = vbo[3] = NULL;
+
+		Shape::read_obj(_obj);
+
+		bb = { -1.0f, 1.0f, 1.0f, -1.0f, 1.0f, -1.0f };
+	}
+};
 
 
 std::random_device rd;
@@ -57,7 +188,7 @@ Light light;
 Shape squ(squ_vertex, squ_normal, squ_color, squ_texCoord);
 Shape test(squ_vertex, squ_normal, squ_color, squ_texCoord);
 
-Shape cube(cube_vertex, cube_normal, cube_color, cube_texCoord);
+Player cube(cube_vertex, cube_normal, cube_color, cube_texCoord);
 
 Shape sphere("moon.obj");
 
