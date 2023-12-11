@@ -234,7 +234,7 @@ void main(int argc, char** argv) {
 	glEnable(GL_BLEND);
 	
 	sphere.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
-	sphere.scale(0, {0.25f, 0.25f, 0.25f});
+	//sphere.scale(0, {0.25f, 0.25f, 0.25f});
 
 	display.cameraPos = { 0.0f, 3.0f, 10.0f };
 	light.setPos({ 0.0f, 0.0f, -5.0f });
