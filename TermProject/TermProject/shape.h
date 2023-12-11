@@ -72,5 +72,6 @@ public:
 
 	void initMatrix();
 
-	glm::mat4 returnTMatrix();
+
+	void initMatrix(const unsigned int _idx);
 };

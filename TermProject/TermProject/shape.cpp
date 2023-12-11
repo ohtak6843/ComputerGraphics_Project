@@ -279,12 +279,6 @@ void Shape::initMatrix() {
 	}
 }
 
-
-glm::mat4 Shape::returnTMatrix() {
-	glm::mat4 result_matrix = glm::mat4(1.0f);
-	for (int i = 0; i < matrix.size(); i++) {
-		result_matrix = matrix[i] * result_matrix;
-	}
-
-	return result_matrix;
+void Shape::initMatrix(const unsigned int _idx) {
+	matrix[_idx] = glm::mat4(1.0f);
 }
