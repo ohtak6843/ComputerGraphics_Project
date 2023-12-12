@@ -274,6 +274,11 @@ void Shape::translate(int _idx, glm::mat4 _mat, glm::vec3 _move) {
 }
 
 
+void Shape::updateData() {
+
+}
+
+
 void Shape::initMatrix() {
 	for (auto& mat : matrix) {
 		mat = glm::mat4(1.0f);

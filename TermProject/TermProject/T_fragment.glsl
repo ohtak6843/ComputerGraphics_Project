@@ -30,7 +30,7 @@ void main()
     vec3 specular = pow(specularLight, shininess) * lightColor;
 
     vec4 result = texture(outTexture, TexCoord);
-    result = vec4((ambient + diffuse), 1.0) * result + vec4(specular, 0.0);
+    result = vec4((ambient + diffuse), 1.0) * result + vec4(specular, 1.0);
 
     FragColor = result;
 }
