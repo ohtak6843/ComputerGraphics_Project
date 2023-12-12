@@ -26,3 +26,15 @@ char* filetobuf(const char* file) {
 	buf[length] = 0; // Null terminator
 	return buf; // Return the buffer
 }
+
+
+bool collide(const BB a, const BB b) {
+	if (a.left > b.right) return false;
+	if (a.right < b.left) return false;
+	if (a.top < b.bottom) return false;
+	if (a.bottom > b.top) return false;
+	if (a.front < b.back) return false;
+	if (a.back > b.front) return false;
+
+	return true;
+}

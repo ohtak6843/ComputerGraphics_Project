@@ -70,9 +70,6 @@ public:
 	void translate(int _idx, glm::mat4 _mat, glm::vec3 _move);
 
 
-	void updateData();
-
-
 	void initMatrix();
 
 
