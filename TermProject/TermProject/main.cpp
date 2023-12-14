@@ -270,6 +270,7 @@ glm::vec4 Cground_color = { 0.0f, 1.0f, 1.0f, 1.0f };
 glm::vec4 Sground_color = { 0.0f, 1.0f, 1.0f, 0.3f };
 
 int updateSpeed = 50;
+bool game_start = false;
 
 
 //--- 윈도우 출력하고 콜백함수 설정
@@ -306,6 +307,7 @@ void main(int argc, char** argv) {
 
 	display.cameraPos = { 0.0f, 3.0f, 20.0f };
 	light.setPos({ 0.0f, 0.0f, -5.0f });
+
 	cube.scale(0, { 0.5,0.5,0.5 });
 
 	for (int i = 0; i < 5; i++) {
@@ -382,9 +384,6 @@ void main(int argc, char** argv) {
 	glTexImage2D(GL_TEXTURE_2D, 0, 3, widthImage, heightImage, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 	stbi_image_free(data);
 
-
-	//bg.scale(0, { 100.0f, 100.0f, 100.0f });
-	//bg.translate(2, { 0.0f, 0.0f, -90.0f });
 
 	glutTimerFunc(updateSpeed, TimerFunction, 1);
 	glutTimerFunc(updateSpeed * 2, TimerFunction, 2);
@@ -696,6 +695,9 @@ GLvoid Keyboard(unsigned char key, int x, int y) {
 	case 'w':
 		cube.jump();
 		break;
+	case 't':
+		game_start = true;
+		break;
 	default:
 		break;
 	}
@@ -717,6 +719,10 @@ GLvoid TimerFunction(int value) {
 	switch (value) {
 		// 데이터 업데이트
 	case 1:
+		if (game_start == false) {
+			glutTimerFunc(updateSpeed, TimerFunction, 1);
+			break;
+		}
 		for (int i = 0; i < Bgrounds.size(); i++) {
 			for (int j = 0; j < Bgrounds[i].size(); j++) {
 				Bgrounds[i][j].updateData();
@@ -765,6 +771,10 @@ GLvoid TimerFunction(int value) {
 		break;
 		// 바닥 생성하기
 	case 2:
+		if (game_start == false) {
+			glutTimerFunc(updateSpeed * 2, TimerFunction, 2);
+			break;
+		}
 		for (int i = 0; i < Bgrounds.size(); i++) {
 			int randint = dist_rand(gen);
 			// common 바닥 생성
@@ -897,6 +907,10 @@ GLvoid TimerFunction(int value) {
 
 		// 메테오 생성하기
 	case 3:
+		if (game_start == false) {
+			glutTimerFunc(3000, TimerFunction, 3);
+			break;
+		}
 	{
 		Meteor temp("moon.obj");
 		temp.setColor({ 1.0f, 0.0f, 0.0f, 1.0f });
