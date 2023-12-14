@@ -8,7 +8,7 @@
 #include "shape.h"
 #include "stb_image.h"
 #include "struct.h"
-
+#include "fmod.hpp"
 
 #include <gl/glew.h> // 필요한 헤더파일 include
 #include <gl/freeglut.h>
@@ -19,7 +19,6 @@
 
 
 #include <iostream>
-#include <stdlib.h>
 #include <random>
 #include <math.h>
 #include <vector>
@@ -28,7 +27,13 @@
 bool collCheakGroundsPlayer();
 void collCheakMeteorPlayer();
 void gameOver();
-
+FMOD::System* systemF(nullptr);
+FMOD::Sound* BGM(nullptr);
+FMOD::Sound* jumpSound(nullptr);
+FMOD::Sound* gameOverSound(nullptr);
+FMOD::Channel* channel(nullptr);
+FMOD_RESULT      result;
+void* extradriverdata(nullptr);
 enum GroundState {
 	common = 0,
 	stop,
@@ -74,6 +79,7 @@ public:
 		y += ySpeed;
 		initMatrix(5);
 		translate(5, { 0.0f, y, 0.0f });
+		result = systemF->playSound(jumpSound, 0, false, &channel);
 		}
 	}
 	void updateData() {
@@ -280,6 +286,7 @@ int updateSpeed = 50;
 bool game_start = false;
 
 
+
 //--- 윈도우 출력하고 콜백함수 설정
 void main(int argc, char** argv) {
 
@@ -311,7 +318,12 @@ void main(int argc, char** argv) {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
 
-
+	result = FMOD::System_Create(&systemF);
+	result = systemF->init(32, FMOD_INIT_NORMAL, extradriverdata);
+	result = systemF->createSound("BGM.mp3", FMOD_LOOP_NORMAL, 0, &BGM);
+	result = systemF->createSound("jump.mp3", FMOD_LOOP_OFF, 0, &jumpSound);
+	result = systemF->createSound("gameOver.mp3", FMOD_LOOP_OFF, 0, &gameOverSound);
+	result = systemF->playSound(BGM, 0, false, &channel);
 	display.cameraPos = { 0.0f, 3.0f, 20.0f };
 	light.setPos({ 0.0f, 0.0f, -5.0f });
 
@@ -384,7 +396,10 @@ void main(int argc, char** argv) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
+	glutTimerFunc(updateSpeed, TimerFunction, 1);
+	glutTimerFunc(updateSpeed * 2, TimerFunction, 2);
+	glutTimerFunc(3000, TimerFunction, 3);
+	glutTimerFunc(20000, TimerFunction, 4);
 
 	stbi_set_flip_vertically_on_load(true);
 	data = stbi_load("background.bmp", &widthImage, &heightImage, &numberOfChannel, 0);
@@ -567,6 +582,7 @@ void gameOver() {
 	playerStandingGround = 0;
 	cube.y = 0;
 	cube.initMatrix(5);
+	result = systemF->playSound(gameOverSound, 0, false, &channel);
 	for (int i = 0; i < 5; i++) {
 		Bgrounds.push_back(std::vector<Ground>());
 		Tgrounds.push_back(std::vector<Ground>());
@@ -795,10 +811,7 @@ GLvoid Keyboard(unsigned char key, int x, int y) {
 		if(game_start) cube.jump();
 		else {
 			game_start = true;
-			glutTimerFunc(updateSpeed, TimerFunction, 1);
-			glutTimerFunc(updateSpeed * 2, TimerFunction, 2);
-			glutTimerFunc(3000, TimerFunction, 3);
-			glutTimerFunc(20000, TimerFunction, 4);
+			
 		}
 		break;
 
@@ -832,7 +845,11 @@ GLvoid TimerFunction(int value) {
 	switch (value) {
 		// 데이터 업데이트
 	case 1:
-	
+		if (game_start == false) {
+			glutTimerFunc(updateSpeed, TimerFunction, 1);
+
+			break;
+		}
 		collCheakMeteorPlayer();
 		for (int i = 0; i < Bgrounds.size(); i++) {
 			for (int j = 0; j < Bgrounds[i].size(); j++) {
@@ -878,11 +895,14 @@ GLvoid TimerFunction(int value) {
 		}
 
 		cube.updateData();
-		if (game_start) glutTimerFunc(updateSpeed, TimerFunction, 1);
+		glutTimerFunc(updateSpeed, TimerFunction, 1);
 		break;
 		// 바닥 생성하기
 	case 2:
-	
+		if (game_start == false) {
+			glutTimerFunc(updateSpeed * 2, TimerFunction, 2);
+			break;
+		}
 		for (int i = 0; i < Bgrounds.size(); i++) {
 			int randint = dist_rand(gen);
 			// common 바닥 생성
@@ -1010,12 +1030,15 @@ GLvoid TimerFunction(int value) {
 				Rgrounds[i].push_back(tempG);
 			}
 		}
-		if (game_start) glutTimerFunc(updateSpeed * 2, TimerFunction, 2);
+		glutTimerFunc(updateSpeed * 2, TimerFunction, 2);
 		break;
 
 		// 메테오 생성하기
 	case 3:
-	
+		if (game_start == false) {
+			glutTimerFunc(3000, TimerFunction, 3);
+			break;
+		}
 	{
 		Meteor temp("moon.obj");
 		temp.setColor({ 1.0f, 0.0f, 0.0f, 1.0f });
@@ -1027,11 +1050,14 @@ GLvoid TimerFunction(int value) {
 		temp.translate(2, { 0.0f, 4.5f, 0.0f });
 		temp.translate(2, { dist(gen), dist(gen), -150.0f });
 		meteors.push_back(temp);
-		if (game_start) glutTimerFunc(1000, TimerFunction, 3);
+		glutTimerFunc(1000, TimerFunction, 3);
 		break;
 	}
 	case 4:
-		
+		if (game_start == false) {
+			glutTimerFunc(20000, TimerFunction, 4);
+			break;
+		}
 		if (stage < 5) {
 			stage++;
 			Cground_color = { dist_RGB(gen), dist_RGB(gen), dist_RGB(gen), 1.0f };
@@ -1064,7 +1090,7 @@ GLvoid TimerFunction(int value) {
 				}
 			}
 		}
-		if(game_start) glutTimerFunc(20000, TimerFunction, 4);
+		glutTimerFunc(20000, TimerFunction, 4);
 		break;
 	default:
 		break;
