@@ -91,6 +91,10 @@ public:
 };
 
 
+glm::vec3 ground_speed = { 0.0f, 0.0f, 0.5f };
+int stage = 1;
+
+
 class Ground : public Shape {
 private:
 
@@ -127,11 +131,11 @@ public:
 
 
 	void updateData() {
-		Shape::translate(2, { 0.0f, 0.0f, 0.5f });
+		Shape::translate(2, ground_speed);
 		--time;
 
 		if (state == descending) {
-			Shape::translate(5, { 0.0f, -0.5f, 0.0f });
+			Shape::translate(5, {0.0f, -0.5f, 0.0f});
 			--gravity_time;
 		}
 	}
@@ -222,6 +226,7 @@ std::uniform_int_distribution<> dist_rand(0, 100);
 std::uniform_real_distribution<> dist(-4.0f, 4.0f);
 std::uniform_real_distribution<> dist_scale(0.1, 0.2f);
 std::uniform_real_distribution<> dist_trans(-2.5f, 2.5f);
+std::uniform_real_distribution<> dist_RGB(0.0f, 1.0f);
 
 
 GLvoid drawScene();
@@ -261,7 +266,7 @@ std::vector<std::vector<Ground>> Rgrounds;
 std::vector<Meteor> meteors;
 
 
-unsigned int texture;
+unsigned int bg_texture, ground_texture;
 int widthImage, heightImage, numberOfChannel;
 unsigned char* data;
 
@@ -371,8 +376,8 @@ void main(int argc, char** argv) {
 	}
 	glutTimerFunc(0, TimerFunction, 1);
 
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
+	glGenTextures(1, &bg_texture);
+	glBindTexture(GL_TEXTURE_2D, bg_texture);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -385,9 +390,24 @@ void main(int argc, char** argv) {
 	stbi_image_free(data);
 
 
+	glGenTextures(1, &ground_texture);
+	glBindTexture(GL_TEXTURE_2D, ground_texture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+
+	stbi_set_flip_vertically_on_load(true);
+	data = stbi_load("ground.bmp", &widthImage, &heightImage, &numberOfChannel, 0);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, widthImage, heightImage, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+	stbi_image_free(data);
+
+
 	glutTimerFunc(updateSpeed, TimerFunction, 1);
 	glutTimerFunc(updateSpeed * 2, TimerFunction, 2);
 	glutTimerFunc(3000, TimerFunction, 3);
+	glutTimerFunc(20000, TimerFunction, 4);
 
 
 	glutDisplayFunc(drawScene); // 출력 함수의 지정
@@ -609,26 +629,32 @@ GLvoid drawScene() {
 	display.updateSetting(Tshader.ID);
 	light.updateSetting(Tshader.ID);
 
+	glBindTexture(GL_TEXTURE_2D, ground_texture);
+
 	for (auto& column_Bground : Bgrounds) {
 		for (auto& row_Bground : column_Bground) {
+			if (row_Bground.state != common) row_Bground.draw(Tshader.ID, GL_TRIANGLES);
 			row_Bground.draw(shader.ID, GL_TRIANGLES);
 		}
 	}
 
 	for (auto& column_Tground : Tgrounds) {
 		for (auto& row_Tground : column_Tground) {
+			if (row_Tground.state != common) row_Tground.draw(Tshader.ID, GL_TRIANGLES);
 			row_Tground.draw(shader.ID, GL_TRIANGLES);
 		}
 	}
 
 	for (auto& column_Lground : Lgrounds) {
 		for (auto& row_Lground : column_Lground) {
+			if (row_Lground.state != common) row_Lground.draw(Tshader.ID, GL_TRIANGLES);
 			row_Lground.draw(shader.ID, GL_TRIANGLES);
 		}
 	}
 
 	for (auto& column_Rground : Rgrounds) {
 		for (auto& row_Rground : column_Rground) {
+			if (row_Rground.state != common) row_Rground.draw(Tshader.ID, GL_TRIANGLES);
 			row_Rground.draw(shader.ID, GL_TRIANGLES);
 		}
 	}
@@ -638,10 +664,10 @@ GLvoid drawScene() {
 		meteor.draw(shader.ID, GL_TRIANGLES);
 	}
 
-	glBindTexture(GL_TEXTURE_2D, texture);
 
 	cube.draw(shader.ID, GL_TRIANGLES);
 
+	glBindTexture(GL_TEXTURE_2D, bg_texture);
 	bg.draw(BGshader.ID, GL_TRIANGLES);
 
 	glutSwapBuffers(); // 화면에 출력하기
@@ -918,6 +944,45 @@ GLvoid TimerFunction(int value) {
 		glutTimerFunc(3000, TimerFunction, 3);
 		break;
 	}
+	case 4:
+		if (game_start == false) {
+			glutTimerFunc(20000, TimerFunction, 4);
+			break;
+		}
+		if (stage < 5) {
+			stage++;
+			Cground_color = { dist_RGB(gen), dist_RGB(gen), dist_RGB(gen), 1.0f };
+			ground_speed += glm::vec3{ 0.0f, 0.0f, 0.1f };
+
+			for (auto& column_Bground : Bgrounds) {
+				for (auto& row_Bground : column_Bground) {
+					row_Bground.setColor(Cground_color);
+				}
+			}
+
+			for (auto& column_Tground : Tgrounds) {
+				for (auto& row_Tground : column_Tground) {
+					if (row_Tground.state != common) row_Tground.draw(Tshader.ID, GL_TRIANGLES);
+					row_Tground.setColor(Cground_color);
+				}
+			}
+
+			for (auto& column_Lground : Lgrounds) {
+				for (auto& row_Lground : column_Lground) {
+					if (row_Lground.state != common) row_Lground.draw(Tshader.ID, GL_TRIANGLES);
+					row_Lground.setColor(Cground_color);
+				}
+			}
+
+			for (auto& column_Rground : Rgrounds) {
+				for (auto& row_Rground : column_Rground) {
+					if (row_Rground.state != common) row_Rground.draw(Tshader.ID, GL_TRIANGLES);
+					row_Rground.setColor(Cground_color);
+				}
+			}
+		}
+		glutTimerFunc(20000, TimerFunction, 4);
+		break;
 	default:
 		break;
 	}
