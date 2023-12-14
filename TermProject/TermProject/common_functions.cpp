@@ -36,5 +36,6 @@ bool collide(const BB a, const BB b) {
 	if (a.front < b.back) return false;
 	if (a.back > b.front) return false;
 
+
 	return true;
 }

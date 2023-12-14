@@ -227,8 +227,6 @@ Light light;
 
 Player cube(cube_vertex, cube_normal, cube_color, cube_texCoord);
 
-Shape sphere("moon.obj");
-
 std::vector<std::vector<Ground>> Bgrounds;
 std::vector<std::vector<Ground>> Tgrounds;
 std::vector<std::vector<Ground>> Lgrounds;
@@ -242,6 +240,9 @@ unsigned int texture;
 int widthImage, heightImage, numberOfChannel;
 unsigned char* data;
 
+
+glm::vec4 Cground_color = { 0.0f, 1.0f, 1.0f, 1.0f };
+glm::vec4 Sground_color = { 0.0f, 1.0f, 1.0f, 0.3f };
 
 int updateSpeed = 50;
 
@@ -302,7 +303,7 @@ void main(int argc, char** argv) {
 
 	for (int i = 0; i < Bgrounds.size(); i++) {
 		for (int j = 0; j < Bgrounds[i].size(); j++) {
-			Bgrounds[i][j].setColor({ 0.0f, 1.0f, 1.0f, 1.0f });
+			Bgrounds[i][j].setColor(Cground_color);
 			Bgrounds[i][j].rotate(1, -90.0f, { 1.0f, 0.0f, 0.0f });
 			Bgrounds[i][j].translate(2, { 0.0f, -5.0f, 0.0f });
 			Bgrounds[i][j].translate(2, { 2.0f * i, 0.0f, -2.0f * j });
@@ -312,7 +313,7 @@ void main(int argc, char** argv) {
 
 	for (int i = 0; i < Tgrounds.size(); i++) {
 		for (int j = 0; j < Tgrounds[i].size(); j++) {
-			Tgrounds[i][j].setColor({ 0.0f, 1.0f, 1.0f, 1.0f });
+			Tgrounds[i][j].setColor(Cground_color);
 			Tgrounds[i][j].rotate(1, 90.0f, { 1.0f, 0.0f, 0.0f });
 			Tgrounds[i][j].translate(2, { 0.0f, 5.0f, 0.0f });
 			Tgrounds[i][j].translate(2, { 2.0f * i, 0.0f, -2.0f * j });
@@ -322,7 +323,7 @@ void main(int argc, char** argv) {
 
 	for (int i = 0; i < Lgrounds.size(); i++) {
 		for (int j = 0; j < Lgrounds[i].size(); j++) {
-			Lgrounds[i][j].setColor({ 0.0f, 1.0f, 1.0f, 1.0f });
+			Lgrounds[i][j].setColor(Cground_color);
 			Lgrounds[i][j].rotate(1, 90.0f, { 0.0f, 1.0f, 0.0f });
 			Lgrounds[i][j].translate(2, { -5.0f, 0.0f, 0.0f });
 			Lgrounds[i][j].translate(2, { 0.0f, 2.0f * i, -2.0f * j });
@@ -332,7 +333,7 @@ void main(int argc, char** argv) {
 
 	for (int i = 0; i < Rgrounds.size(); i++) {
 		for (int j = 0; j < Rgrounds[i].size(); j++) {
-			Rgrounds[i][j].setColor({ 0.0f, 1.0f, 1.0f, 1.0f });
+			Rgrounds[i][j].setColor(Cground_color);
 			Rgrounds[i][j].rotate(1, -90.0f, { 0.0f, 1.0f, 0.0f });
 			Rgrounds[i][j].translate(2, { 5.0f, 0.0f, 0.0f });
 			Rgrounds[i][j].translate(2, { 0.0f, 2.0f * i, -2.0f * j });
@@ -629,27 +630,124 @@ GLvoid TimerFunction(int value) {
 		break;
 		// ¹Ù´Ú »ý¼ºÇÏ±â
 	case 2:
-		for (auto& column_Bground : Bgrounds) {
+		for (int i = 0; i < Bgrounds.size(); i++) {
 			int randint = dist_rand(gen);
+			// common ¹Ù´Ú »ý¼º
 			if (randint < 40) {
-				Ground tempG(cube_vertex, cube_normal, cube_color, cube_texCoord);
-				column_Bground.push_back(tempG);
+				Ground tempG(squ_vertex, squ_normal, squ_color, squ_texCoord);
+				tempG.state = common;
+				tempG.time = 110;
+				tempG.setColor(Cground_color);
+				tempG.rotate(1, -90.0f, { 1.0f, 0.0f, 0.0f });
+				tempG.translate(2, { 0.0f, -5.0f, 0.0f });
+				tempG.translate(2, { 2.0f * i, 0.0f, 0.0f });
+				tempG.translate(2, { -2.0f * float(5 - 1) / 2, 0.0f, 0.0f });
+				tempG.translate(2, { 0.0f, 0.0f, -100.0f });
+				Bgrounds[i].push_back(tempG);
 			}
+			// ¶³¾îÁö´Â ¹Ù´Ú »ý¼º
 			else if (randint < 60) {
-
+				Ground tempG(squ_vertex, squ_normal, squ_color, squ_texCoord);
+				tempG.state = stop;
+				tempG.time = 110;
+				tempG.setColor(Sground_color);
+				tempG.rotate(1, -90.0f, { 1.0f, 0.0f, 0.0f });
+				tempG.translate(2, { 0.0f, -5.0f, 0.0f });
+				tempG.translate(2, { 2.0f * i, 0.0f, 0.0f });
+				tempG.translate(2, { -2.0f * float(5 - 1) / 2, 0.0f, 0.0f });
+				tempG.translate(2, { 0.0f, 0.0f, -100.0f });
+				Bgrounds[i].push_back(tempG);
 			}
 		}
 
-		for (auto& column_Tground : Tgrounds) {
-
+		for (int i = 0; i < Tgrounds.size(); i++) {
+			int randint = dist_rand(gen);
+			// common ¹Ù´Ú »ý¼º
+			if (randint < 40) {
+				Ground tempG(squ_vertex, squ_normal, squ_color, squ_texCoord);
+				tempG.state = common;
+				tempG.time = 110;
+				tempG.setColor(Cground_color);
+				tempG.rotate(1, 90.0f, { 1.0f, 0.0f, 0.0f });
+				tempG.translate(2, { 0.0f, 5.0f, 0.0f });
+				tempG.translate(2, { 2.0f * i, 0.0f, 0.0f });
+				tempG.translate(2, { -2.0f * float(5 - 1) / 2, 0.0f, 0.0f });
+				tempG.translate(2, { 0.0f, 0.0f, -100.0f });
+				Tgrounds[i].push_back(tempG);
+			}
+			// ¶³¾îÁö´Â ¹Ù´Ú »ý¼º
+			else if (randint < 60) {
+				Ground tempG(squ_vertex, squ_normal, squ_color, squ_texCoord);
+				tempG.state = stop;
+				tempG.time = 110;
+				tempG.setColor(Sground_color);
+				tempG.rotate(1, 90.0f, { 1.0f, 0.0f, 0.0f });
+				tempG.translate(2, { 0.0f, 5.0f, 0.0f });
+				tempG.translate(2, { 2.0f * i, 0.0f, 0.0f });
+				tempG.translate(2, { -2.0f * float(5 - 1) / 2, 0.0f, 0.0f });
+				tempG.translate(2, { 0.0f, 0.0f, -100.0f });
+				Tgrounds[i].push_back(tempG);
+			}
 		}
 
-		for (auto& column_Lground : Lgrounds) {
-
+		for (int i = 0; i < Lgrounds.size(); i++) {
+			int randint = dist_rand(gen);
+			// common ¹Ù´Ú »ý¼º
+			if (randint < 40) {
+				Ground tempG(squ_vertex, squ_normal, squ_color, squ_texCoord);
+				tempG.state = common;
+				tempG.time = 110;
+				tempG.setColor(Cground_color);
+				tempG.rotate(1, 90.0f, { 0.0f, 1.0f, 0.0f });
+				tempG.translate(2, { -5.0f, 0.0f, 0.0f });
+				tempG.translate(2, { 0.0f, 2.0f * i, 0.0f });
+				tempG.translate(2, { 0.0f, -2.0f * float(5 - 1) / 2, 0.0f });
+				tempG.translate(2, { 0.0f, 0.0f, -100.0f });
+				Lgrounds[i].push_back(tempG);
+			}
+			// ¶³¾îÁö´Â ¹Ù´Ú »ý¼º
+			else if (randint < 60) {
+				Ground tempG(squ_vertex, squ_normal, squ_color, squ_texCoord);
+				tempG.state = stop;
+				tempG.time = 110;
+				tempG.setColor(Sground_color);
+				tempG.rotate(1, 90.0f, { 0.0f, 1.0f, 0.0f });
+				tempG.translate(2, { -5.0f, 0.0f, 0.0f });
+				tempG.translate(2, { 0.0f, 2.0f * i, 0.0f });
+				tempG.translate(2, { 0.0f, -2.0f * float(5 - 1) / 2, 0.0f });
+				tempG.translate(2, { 0.0f, 0.0f, -100.0f });
+				Lgrounds[i].push_back(tempG);
+			}
 		}
 
-		for (auto& column_Rground : Rgrounds) {
-
+		for (int i = 0; i < Rgrounds.size(); i++) {
+			int randint = dist_rand(gen);
+			// common ¹Ù´Ú »ý¼º
+			if (randint < 40) {
+				Ground tempG(squ_vertex, squ_normal, squ_color, squ_texCoord);
+				tempG.state = common;
+				tempG.time = 110;
+				tempG.setColor(Cground_color);
+				tempG.rotate(1, -90.0f, { 0.0f, 1.0f, 0.0f });
+				tempG.translate(2, { 5.0f, 0.0f, 0.0f });
+				tempG.translate(2, { 0.0f, 2.0f * i, 0.0f });
+				tempG.translate(2, { 0.0f, -2.0f * float(5 - 1) / 2, 0.0f });
+				tempG.translate(2, { 0.0f, 0.0f, -100.0f });
+				Rgrounds[i].push_back(tempG);
+			}
+			// ¶³¾îÁö´Â ¹Ù´Ú »ý¼º
+			else if (randint < 60) {
+				Ground tempG(squ_vertex, squ_normal, squ_color, squ_texCoord);
+				tempG.state = stop;
+				tempG.time = 110;
+				tempG.setColor(Sground_color);
+				tempG.rotate(1, -90.0f, { 0.0f, 1.0f, 0.0f });
+				tempG.translate(2, { 5.0f, 0.0f, 0.0f });
+				tempG.translate(2, { 0.0f, 2.0f * i, 0.0f });
+				tempG.translate(2, { 0.0f, -2.0f * float(5 - 1) / 2, 0.0f });
+				tempG.translate(2, { 0.0f, 0.0f, -100.0f });
+				Rgrounds[i].push_back(tempG);
+			}
 		}
 		glutTimerFunc(updateSpeed * 2, TimerFunction, 2);
 		break;
