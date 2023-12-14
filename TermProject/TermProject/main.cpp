@@ -106,7 +106,7 @@ public:
 	Ground() {
 		vao = vbo[0] = vbo[1] = vbo[2] = vbo[3] = NULL;
 
-		bb = { -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, -1.0f };
+		bb = { -1.0f, 1.0f, 1.0f, -1.0f, 0.0f, 0.0f };
 	}
 
 	Ground(std::vector<GLfloat> _vertex, std::vector<GLfloat> _normal, std::vector<GLfloat> _color, std::vector<GLfloat> _texCoord) {
@@ -117,7 +117,7 @@ public:
 		color = _color;
 		texCoord = _texCoord;
 
-		bb = { -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, -1.0f };
+		bb = { -1.0f, 1.0f, 1.0f, -1.0f, 0.0f, 0.0f };
 	}
 
 	Ground(const char* _obj) {
@@ -125,7 +125,7 @@ public:
 
 		Shape::read_obj(_obj);
 
-		bb = { -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, -1.0f };
+		bb = { -1.0f, 1.0f, 1.0f, -1.0f, 0.0f, 0.0f };
 	}
 
 
