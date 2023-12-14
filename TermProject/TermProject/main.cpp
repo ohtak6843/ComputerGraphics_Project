@@ -632,15 +632,3 @@ GLvoid SpecialKey(int key, int x, int y) {
 	glutPostRedisplay();
 }
 
-
-GLvoid TimerFunction(int value) {
-	switch (value) {
-	case 1:
-		cube.updateData();
-		glutTimerFunc(10, TimerFunction, 1);
-		break;
-	default:
-		break;
-	}
-	glutPostRedisplay();
-}
