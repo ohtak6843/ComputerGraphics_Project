@@ -147,6 +147,8 @@
     <ClCompile Include="shape.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="BG_fragment.glsl" />
+    <None Include="BG_vertex.glsl" />
     <None Include="fragment.glsl" />
     <None Include="T_fragment.glsl" />
     <None Include="T_vertex.glsl" />
