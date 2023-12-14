@@ -27,6 +27,18 @@
 
 bool collCheakGroundsPlayer();
 
+enum PlayerState {
+
+};
+
+
+enum GroundState {
+	common = 0,
+	stop,
+	descending,
+};
+
+
 class Player : public Shape {
 private:
 
@@ -61,8 +73,8 @@ public:
 	}
 	void jump() {
 		//if (collCheakGroundsPlayer()) {
-			ySpeed = 1.0;
-			
+		ySpeed = 1.0;
+
 		//}
 	}
 	void updateData() {
@@ -81,9 +93,12 @@ public:
 
 class Ground : public Shape {
 private:
-	int time;
 
 public:
+	int time = 10;
+
+	GroundState state = common;
+	int gravity_time = 5;
 
 	Ground() {
 		vao = vbo[0] = vbo[1] = vbo[2] = vbo[3] = NULL;
@@ -109,19 +124,30 @@ public:
 
 		bb = { -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, -1.0f };
 	}
+
+
+	void updateData() {
+		Shape::translate(2, { 0.0f, 0.0f, 1.0f });
+		--time;
+
+		if (state == descending) {
+			Shape::translate(2, { 0.0f, -0.5f, 0.0f });
+			--gravity_time;
+		}
+	}
 };
 
 
 class Meteor : public Shape {
 private:
-	int time;
 
 public:
+	int time;
 
 	Meteor() {
 		vao = vbo[0] = vbo[1] = vbo[2] = vbo[3] = NULL;
 
-		bb = { -1.0f, 1.0f, 1.0f, -1.0f, 1.0f, -1.0f };
+		bb = { -2.0f, 2.0f, 2.0f, -2.0f, 2.0f, -2.0f };
 	}
 
 	Meteor(std::vector<GLfloat> _vertex, std::vector<GLfloat> _normal, std::vector<GLfloat> _color, std::vector<GLfloat> _texCoord) {
@@ -132,7 +158,7 @@ public:
 		color = _color;
 		texCoord = _texCoord;
 
-		bb = { -1.0f, 1.0f, 1.0f, -1.0f, 1.0f, -1.0f };
+		bb = { -2.0f, 2.0f, 2.0f, -2.0f, 2.0f, -2.0f };
 	}
 
 	Meteor(const char* _obj) {
@@ -140,7 +166,13 @@ public:
 
 		Shape::read_obj(_obj);
 
-		bb = { -1.0f, 1.0f, 1.0f, -1.0f, 1.0f, -1.0f };
+		bb = { -2.0f, 2.0f, 2.0f, -2.0f, 2.0f, -2.0f };
+	}
+
+
+	void updateData() {
+		Shape::translate(2, { 0.0f, 0.0f, 2.0f });
+		--time;
 	}
 };
 
@@ -149,11 +181,12 @@ class Item : public Shape {
 private:
 
 public:
+	int time;
 
 	Item() {
 		vao = vbo[0] = vbo[1] = vbo[2] = vbo[3] = NULL;
 
-		bb = { -1.0f, 1.0f, 1.0f, -1.0f, 1.0f, -1.0f };
+		bb = { -2.0f, 2.0f, 2.0f, -2.0f, 2.0f, -2.0f };
 	}
 
 	Item(std::vector<GLfloat> _vertex, std::vector<GLfloat> _normal, std::vector<GLfloat> _color, std::vector<GLfloat> _texCoord) {
@@ -164,7 +197,7 @@ public:
 		color = _color;
 		texCoord = _texCoord;
 
-		bb = { -1.0f, 1.0f, 1.0f, -1.0f, 1.0f, -1.0f };
+		bb = { -2.0f, 2.0f, 2.0f, -2.0f, 2.0f, -2.0f };
 	}
 
 	Item(const char* _obj) {
@@ -172,14 +205,21 @@ public:
 
 		Shape::read_obj(_obj);
 
-		bb = { -1.0f, 1.0f, 1.0f, -1.0f, 1.0f, -1.0f };
+		bb = { -2.0f, 2.0f, 2.0f, -2.0f, 2.0f, -2.0f };
+	}
+
+
+	void updateData() {
+		Shape::translate(2, { 0.0f, 0.0f, 1.0f });
+		--time;
 	}
 };
 
 
 std::random_device rd;
 std::mt19937 gen(rd());
-std::uniform_real_distribution<> dist(-2.0f, 2.0f);
+std::uniform_int_distribution<> dist_rand(0, 100);
+std::uniform_real_distribution<> dist(-4.0f, 4.0f);
 std::uniform_real_distribution<> dist_scale(0.1, 0.2f);
 std::uniform_real_distribution<> dist_trans(-2.5f, 2.5f);
 
@@ -206,22 +246,26 @@ Display display;
 
 Light light;
 
-Shape squ(squ_vertex, squ_normal, squ_color, squ_texCoord);
-Shape test(squ_vertex, squ_normal, squ_color, squ_texCoord);
-
 Player cube(cube_vertex, cube_normal, cube_color, cube_texCoord);
 
-Shape sphere("moon.obj");
+std::vector<std::vector<Ground>> Bgrounds;
+std::vector<std::vector<Ground>> Tgrounds;
+std::vector<std::vector<Ground>> Lgrounds;
+std::vector<std::vector<Ground>> Rgrounds;
 
-std::vector<std::vector<Shape>> Bgrounds;
-std::vector<std::vector<Shape>> Tgrounds;
-std::vector<std::vector<Shape>> Lgrounds;
-std::vector<std::vector<Shape>> Rgrounds;
+
+std::vector<Meteor> meteors;
 
 
 unsigned int texture;
 int widthImage, heightImage, numberOfChannel;
 unsigned char* data;
+
+
+glm::vec4 Cground_color = { 0.0f, 1.0f, 1.0f, 1.0f };
+glm::vec4 Sground_color = { 0.0f, 1.0f, 1.0f, 0.3f };
+
+int updateSpeed = 50;
 
 
 //--- 윈도우 출력하고 콜백함수 설정
@@ -253,54 +297,46 @@ void main(int argc, char** argv) {
 	glDisable(GL_CULL_FACE); // 뒷면 제거
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
-	
-	sphere.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
-	//sphere.scale(0, {0.25f, 0.25f, 0.25f});
+
 
 	display.cameraPos = { 0.0f, 3.0f, 20.0f };
 	light.setPos({ 0.0f, 0.0f, -5.0f });
 
-	
-	squ.scale(0, { 3.0f, 3.0f, 1.0f });
-	squ.setColor({ 0.0f, 1.0f, 1.0f, 1.0f});
 
-	test.scale(0, { 3.0f, 3.0f, 1.0f });
-	test.translate(2, { 0.0f, 0.0f, 1.0f });
+	cube.translate(2, { 0.0f, -4.0f, 0.0f });
 
 
 	for (int i = 0; i < 5; i++) {
-		Bgrounds.push_back(std::vector<Shape>());
-		Tgrounds.push_back(std::vector<Shape>());
-		Lgrounds.push_back(std::vector<Shape>());
-		Rgrounds.push_back(std::vector<Shape>());
+		Bgrounds.push_back(std::vector<Ground>());
+		Tgrounds.push_back(std::vector<Ground>());
+		Lgrounds.push_back(std::vector<Ground>());
+		Rgrounds.push_back(std::vector<Ground>());
 	}
 
 	for (int i = 0; i < Bgrounds.size(); i++) {
-		for (int j = 0; j < 100; j++) {
-			Bgrounds[i].push_back(Shape(squ_vertex, squ_normal, squ_color, squ_texCoord));
-			Tgrounds[i].push_back(Shape(squ_vertex, squ_normal, squ_color, squ_texCoord));
-			Lgrounds[i].push_back(Shape(squ_vertex, squ_normal, squ_color, squ_texCoord));
-			Rgrounds[i].push_back(Shape(squ_vertex, squ_normal, squ_color, squ_texCoord));
+		for (int j = 0; j < 50; j++) {
+			Bgrounds[i].push_back(Ground(squ_vertex, squ_normal, squ_color, squ_texCoord));
+			Tgrounds[i].push_back(Ground(squ_vertex, squ_normal, squ_color, squ_texCoord));
+			Lgrounds[i].push_back(Ground(squ_vertex, squ_normal, squ_color, squ_texCoord));
+			Rgrounds[i].push_back(Ground(squ_vertex, squ_normal, squ_color, squ_texCoord));
 		}
 	}
 
 	for (int i = 0; i < Bgrounds.size(); i++) {
 		for (int j = 0; j < Bgrounds[i].size(); j++) {
-			Bgrounds[i][j].setColor({ 0.0f, 1.0f, 1.0f, 1.0f });
+			Bgrounds[i][j].setColor(Cground_color);
 			Bgrounds[i][j].rotate(1, -90.0f, { 1.0f, 0.0f, 0.0f });
 			Bgrounds[i][j].translate(2, { 0.0f, -5.0f, 0.0f });
-			Bgrounds[i][j].translate(2, { 0.0f, 4.0f, 0.0f });
 			Bgrounds[i][j].translate(2, { 2.0f * i, 0.0f, -2.0f * j });
-			Bgrounds[i][j].translate(2, { -2.0f * float(5 - 1) / 2, 0.0f, 0.0f});
+			Bgrounds[i][j].translate(2, { -2.0f * float(5 - 1) / 2, 0.0f, 0.0f });
 		}
 	}
 
 	for (int i = 0; i < Tgrounds.size(); i++) {
 		for (int j = 0; j < Tgrounds[i].size(); j++) {
-			Tgrounds[i][j].setColor({ 0.0f, 1.0f, 1.0f, 1.0f });
+			Tgrounds[i][j].setColor(Cground_color);
 			Tgrounds[i][j].rotate(1, 90.0f, { 1.0f, 0.0f, 0.0f });
 			Tgrounds[i][j].translate(2, { 0.0f, 5.0f, 0.0f });
-			Tgrounds[i][j].translate(2, { 0.0f, 4.0f, 0.0f });
 			Tgrounds[i][j].translate(2, { 2.0f * i, 0.0f, -2.0f * j });
 			Tgrounds[i][j].translate(2, { -2.0f * float(5 - 1) / 2, 0.0f, 0.0f });
 		}
@@ -308,10 +344,9 @@ void main(int argc, char** argv) {
 
 	for (int i = 0; i < Lgrounds.size(); i++) {
 		for (int j = 0; j < Lgrounds[i].size(); j++) {
-			Lgrounds[i][j].setColor({ 0.0f, 1.0f, 1.0f, 1.0f });
+			Lgrounds[i][j].setColor(Cground_color);
 			Lgrounds[i][j].rotate(1, 90.0f, { 0.0f, 1.0f, 0.0f });
 			Lgrounds[i][j].translate(2, { -5.0f, 0.0f, 0.0f });
-			Lgrounds[i][j].translate(2, { 0.0f, 4.0f, 0.0f });
 			Lgrounds[i][j].translate(2, { 0.0f, 2.0f * i, -2.0f * j });
 			Lgrounds[i][j].translate(2, { 0.0f, -2.0f * float(5 - 1) / 2, 0.0f });
 		}
@@ -319,10 +354,9 @@ void main(int argc, char** argv) {
 
 	for (int i = 0; i < Rgrounds.size(); i++) {
 		for (int j = 0; j < Rgrounds[i].size(); j++) {
-			Rgrounds[i][j].setColor({ 0.0f, 1.0f, 1.0f, 1.0f });
+			Rgrounds[i][j].setColor(Cground_color);
 			Rgrounds[i][j].rotate(1, -90.0f, { 0.0f, 1.0f, 0.0f });
 			Rgrounds[i][j].translate(2, { 5.0f, 0.0f, 0.0f });
-			Rgrounds[i][j].translate(2, { 0.0f, 4.0f, 0.0f });
 			Rgrounds[i][j].translate(2, { 0.0f, 2.0f * i, -2.0f * j });
 			Rgrounds[i][j].translate(2, { 0.0f, -2.0f * float(5 - 1) / 2, 0.0f });
 		}
@@ -343,6 +377,11 @@ void main(int argc, char** argv) {
 	stbi_image_free(data);
 
 
+	glutTimerFunc(updateSpeed, TimerFunction, 1);
+	glutTimerFunc(updateSpeed * 2, TimerFunction, 2);
+	glutTimerFunc(3000, TimerFunction, 3);
+
+
 	glutDisplayFunc(drawScene); // 출력 함수의 지정
 	glutReshapeFunc(Reshape); // 다시 그리기 함수 지정
 	glutMouseFunc(Mouse);
@@ -351,6 +390,8 @@ void main(int argc, char** argv) {
 	glutSpecialFunc(SpecialKey);
 	glutMainLoop(); // 이벤트 처리 시작
 }
+
+
 float playerMoveRate = 0.0f;
 float moveXCheak = 1.0;
 float moveYCheak = 0.0;
@@ -453,7 +494,7 @@ void moveGrounds(float moveRate) {
 		for (auto& column_Bground : Bgrounds) {
 			for (auto& row_Bround : column_Bground) {
 
-				row_Bround.translate(3, { moveXCheak *moveRate, moveYCheak * moveRate, 0.0f });
+				row_Bround.translate(3, { moveXCheak * moveRate, moveYCheak * moveRate, 0.0f });
 			}
 		}
 
@@ -524,9 +565,10 @@ bool collCheakGroundsPlayer() {
 		break;
 	}
 	return false;
-}		
+}
 
-		
+
+
 
 //--- 콜백 함수: 그리기 콜백 함수
 GLvoid drawScene() {
@@ -540,31 +582,32 @@ GLvoid drawScene() {
 	light.updateSetting(Tshader.ID);
 
 	for (auto& column_Bground : Bgrounds) {
-		for (auto& row_Bround : column_Bground) {
-			row_Bround.updateBuffer();
-			row_Bround.draw(shader.ID, GL_TRIANGLES);
+		for (auto& row_Bground : column_Bground) {
+			row_Bground.draw(shader.ID, GL_TRIANGLES);
 		}
 	}
 
 	for (auto& column_Tground : Tgrounds) {
-		for (auto& row_Tround : column_Tground) {
-			row_Tround.updateBuffer();
-			row_Tround.draw(shader.ID, GL_TRIANGLES);
+		for (auto& row_Tground : column_Tground) {
+			row_Tground.draw(shader.ID, GL_TRIANGLES);
 		}
 	}
 
 	for (auto& column_Lground : Lgrounds) {
-		for (auto& row_Lround : column_Lground) {
-			row_Lround.updateBuffer();
-			row_Lround.draw(shader.ID, GL_TRIANGLES);
+		for (auto& row_Lground : column_Lground) {
+			row_Lground.draw(shader.ID, GL_TRIANGLES);
 		}
 	}
 
 	for (auto& column_Rground : Rgrounds) {
-		for (auto& row_Rround : column_Rground) {
-			row_Rround.updateBuffer();
-			row_Rround.draw(shader.ID, GL_TRIANGLES);
+		for (auto& row_Rground : column_Rground) {
+			row_Rground.draw(shader.ID, GL_TRIANGLES);
 		}
+	}
+
+
+	for (auto& meteor : meteors) {
+		meteor.draw(shader.ID, GL_TRIANGLES);
 	}
 
 	glBindTexture(GL_TEXTURE_2D, texture);
@@ -634,10 +677,173 @@ GLvoid SpecialKey(int key, int x, int y) {
 
 GLvoid TimerFunction(int value) {
 	switch (value) {
+		// 데이터 업데이트
 	case 1:
-		cube.updateData();
-		glutTimerFunc(10, TimerFunction, 1);
+		for (auto& column_Bground : Bgrounds) {
+			for (auto& row_Bground : column_Bground) {
+				row_Bground.updateData();
+			}
+		}
+
+		for (auto& column_Tground : Tgrounds) {
+			for (auto& row_Tground : column_Tground) {
+				row_Tground.updateData();
+			}
+		}
+
+		for (auto& column_Lground : Lgrounds) {
+			for (auto& row_Lground : column_Lground) {
+				row_Lground.updateData();
+			}
+		}
+
+		for (auto& column_Rground : Rgrounds) {
+			for (auto& row_Rground : column_Rground) {
+				row_Rground.updateData();
+			}
+		}
+
+		for (auto& meteor : meteors) {
+			meteor.updateData();
+		}
+
+		glutTimerFunc(updateSpeed, TimerFunction, 1);
 		break;
+		// 바닥 생성하기
+	case 2:
+		for (int i = 0; i < Bgrounds.size(); i++) {
+			int randint = dist_rand(gen);
+			// common 바닥 생성
+			if (randint < 40) {
+				Ground tempG(squ_vertex, squ_normal, squ_color, squ_texCoord);
+				tempG.state = common;
+				tempG.time = 110;
+				tempG.setColor(Cground_color);
+				tempG.rotate(1, -90.0f, { 1.0f, 0.0f, 0.0f });
+				tempG.translate(2, { 0.0f, -5.0f, 0.0f });
+				tempG.translate(2, { 2.0f * i, 0.0f, 0.0f });
+				tempG.translate(2, { -2.0f * float(5 - 1) / 2, 0.0f, 0.0f });
+				tempG.translate(2, { 0.0f, 0.0f, -100.0f });
+				Bgrounds[i].push_back(tempG);
+			}
+			// 떨어지는 바닥 생성
+			else if (randint < 60) {
+				Ground tempG(squ_vertex, squ_normal, squ_color, squ_texCoord);
+				tempG.state = stop;
+				tempG.time = 110;
+				tempG.setColor(Sground_color);
+				tempG.rotate(1, -90.0f, { 1.0f, 0.0f, 0.0f });
+				tempG.translate(2, { 0.0f, -5.0f, 0.0f });
+				tempG.translate(2, { 2.0f * i, 0.0f, 0.0f });
+				tempG.translate(2, { -2.0f * float(5 - 1) / 2, 0.0f, 0.0f });
+				tempG.translate(2, { 0.0f, 0.0f, -100.0f });
+				Bgrounds[i].push_back(tempG);
+			}
+		}
+
+		for (int i = 0; i < Tgrounds.size(); i++) {
+			int randint = dist_rand(gen);
+			// common 바닥 생성
+			if (randint < 40) {
+				Ground tempG(squ_vertex, squ_normal, squ_color, squ_texCoord);
+				tempG.state = common;
+				tempG.time = 110;
+				tempG.setColor(Cground_color);
+				tempG.rotate(1, 90.0f, { 1.0f, 0.0f, 0.0f });
+				tempG.translate(2, { 0.0f, 5.0f, 0.0f });
+				tempG.translate(2, { 2.0f * i, 0.0f, 0.0f });
+				tempG.translate(2, { -2.0f * float(5 - 1) / 2, 0.0f, 0.0f });
+				tempG.translate(2, { 0.0f, 0.0f, -100.0f });
+				Tgrounds[i].push_back(tempG);
+			}
+			// 떨어지는 바닥 생성
+			else if (randint < 60) {
+				Ground tempG(squ_vertex, squ_normal, squ_color, squ_texCoord);
+				tempG.state = stop;
+				tempG.time = 110;
+				tempG.setColor(Sground_color);
+				tempG.rotate(1, 90.0f, { 1.0f, 0.0f, 0.0f });
+				tempG.translate(2, { 0.0f, 5.0f, 0.0f });
+				tempG.translate(2, { 2.0f * i, 0.0f, 0.0f });
+				tempG.translate(2, { -2.0f * float(5 - 1) / 2, 0.0f, 0.0f });
+				tempG.translate(2, { 0.0f, 0.0f, -100.0f });
+				Tgrounds[i].push_back(tempG);
+			}
+		}
+
+		for (int i = 0; i < Lgrounds.size(); i++) {
+			int randint = dist_rand(gen);
+			// common 바닥 생성
+			if (randint < 40) {
+				Ground tempG(squ_vertex, squ_normal, squ_color, squ_texCoord);
+				tempG.state = common;
+				tempG.time = 110;
+				tempG.setColor(Cground_color);
+				tempG.rotate(1, 90.0f, { 0.0f, 1.0f, 0.0f });
+				tempG.translate(2, { -5.0f, 0.0f, 0.0f });
+				tempG.translate(2, { 0.0f, 2.0f * i, 0.0f });
+				tempG.translate(2, { 0.0f, -2.0f * float(5 - 1) / 2, 0.0f });
+				tempG.translate(2, { 0.0f, 0.0f, -100.0f });
+				Lgrounds[i].push_back(tempG);
+			}
+			// 떨어지는 바닥 생성
+			else if (randint < 60) {
+				Ground tempG(squ_vertex, squ_normal, squ_color, squ_texCoord);
+				tempG.state = stop;
+				tempG.time = 110;
+				tempG.setColor(Sground_color);
+				tempG.rotate(1, 90.0f, { 0.0f, 1.0f, 0.0f });
+				tempG.translate(2, { -5.0f, 0.0f, 0.0f });
+				tempG.translate(2, { 0.0f, 2.0f * i, 0.0f });
+				tempG.translate(2, { 0.0f, -2.0f * float(5 - 1) / 2, 0.0f });
+				tempG.translate(2, { 0.0f, 0.0f, -100.0f });
+				Lgrounds[i].push_back(tempG);
+			}
+		}
+
+		for (int i = 0; i < Rgrounds.size(); i++) {
+			int randint = dist_rand(gen);
+			// common 바닥 생성
+			if (randint < 40) {
+				Ground tempG(squ_vertex, squ_normal, squ_color, squ_texCoord);
+				tempG.state = common;
+				tempG.time = 110;
+				tempG.setColor(Cground_color);
+				tempG.rotate(1, -90.0f, { 0.0f, 1.0f, 0.0f });
+				tempG.translate(2, { 5.0f, 0.0f, 0.0f });
+				tempG.translate(2, { 0.0f, 2.0f * i, 0.0f });
+				tempG.translate(2, { 0.0f, -2.0f * float(5 - 1) / 2, 0.0f });
+				tempG.translate(2, { 0.0f, 0.0f, -100.0f });
+				Rgrounds[i].push_back(tempG);
+			}
+			// 떨어지는 바닥 생성
+			else if (randint < 60) {
+				Ground tempG(squ_vertex, squ_normal, squ_color, squ_texCoord);
+				tempG.state = stop;
+				tempG.time = 110;
+				tempG.setColor(Sground_color);
+				tempG.rotate(1, -90.0f, { 0.0f, 1.0f, 0.0f });
+				tempG.translate(2, { 5.0f, 0.0f, 0.0f });
+				tempG.translate(2, { 0.0f, 2.0f * i, 0.0f });
+				tempG.translate(2, { 0.0f, -2.0f * float(5 - 1) / 2, 0.0f });
+				tempG.translate(2, { 0.0f, 0.0f, -100.0f });
+				Rgrounds[i].push_back(tempG);
+			}
+		}
+		glutTimerFunc(updateSpeed * 2, TimerFunction, 2);
+		break;
+
+		// 메테오 생성하기
+	case 3:
+	{
+		Meteor temp("moon.obj");
+		temp.setColor({ 1.0f, 0.0f, 0.0f, 1.0f });
+		temp.scale(0, { 0.5f, 0.5f, 0.5f });
+		temp.translate(2, { dist(gen), dist(gen), -100.0f });
+		meteors.push_back(temp);
+		glutTimerFunc(3000, TimerFunction, 3);
+		break;
+	}
 	default:
 		break;
 	}
