@@ -30,16 +30,18 @@ class Player : public Shape {
 private:
 
 public:
-
+	float y, ySpeed;
 	Player() {
 		vao = vbo[0] = vbo[1] = vbo[2] = vbo[3] = NULL;
-
+		y = 0.0;
+		ySpeed = 0.0;
 		bb = { -1.0f, 1.0f, 1.0f, -1.0f, 1.0f, -1.0f };
 	}
 
 	Player(std::vector<GLfloat> _vertex, std::vector<GLfloat> _normal, std::vector<GLfloat> _color, std::vector<GLfloat> _texCoord) {
 		vao = vbo[0] = vbo[1] = vbo[2] = vbo[3] = NULL;
-
+		y = 0.0;
+		ySpeed = 0.0;
 		vertex = _vertex;
 		normal = _normal;
 		color = _color;
@@ -50,10 +52,28 @@ public:
 
 	Player(const char* _obj) {
 		vao = vbo[0] = vbo[1] = vbo[2] = vbo[3] = NULL;
-
+		y = 0.0;
+		ySpeed = 0.0;
 		Shape::read_obj(_obj);
 
 		bb = { -1.0f, 1.0f, 1.0f, -1.0f, 1.0f, -1.0f };
+	}
+	void jump() {
+		if (y <= 0.0) {
+			ySpeed = 1.0;
+		}
+	}
+	void updateData() {
+		Shape::updateData();
+
+		y += ySpeed;
+		ySpeed -= 0.2;
+		if (y <= 0) {
+			y = 0;
+			ySpeed = 0;
+		}
+		initMatrix(6);
+		translate(6, { 0.0f, y, 0.0f });
 	}
 };
 
@@ -306,7 +326,7 @@ void main(int argc, char** argv) {
 			Rgrounds[i][j].translate(2, { 0.0f, -2.0f * float(5 - 1) / 2, 0.0f });
 		}
 	}
-
+	glutTimerFunc(0, TimerFunction, 1);
 
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
@@ -449,6 +469,8 @@ void moveGrounds(float moveRate) {
 		}
 	}
 }
+
+
 //--- 콜백 함수: 그리기 콜백 함수
 GLvoid drawScene() {
 	glClearColor(rColor, gColor, bColor, 1.0f);
@@ -528,10 +550,13 @@ GLvoid Keyboard(unsigned char key, int x, int y) {
 		exit(0);
 		break;
 	case 'a':
-		moveGrounds(0.5f);
+		moveGrounds(0.2f);
 		break;
 	case 'd':
-		moveGrounds(-0.5f);
+		moveGrounds(-0.2f);
+		break;
+	case 'w':
+		cube.jump();
 		break;
 	default:
 		break;
@@ -553,6 +578,7 @@ GLvoid SpecialKey(int key, int x, int y) {
 GLvoid TimerFunction(int value) {
 	switch (value) {
 	case 1:
+		cube.updateData();
 		glutTimerFunc(50, TimerFunction, 1);
 		break;
 	default:
