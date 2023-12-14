@@ -531,6 +531,9 @@ bool collCheakGroundsPlayer() {
 		for (auto& column_Bground : Bgrounds) {
 			for (auto& row_Bround : column_Bground) {
 				if (collide(row_Bround.get_bb(), cube.get_bb())) {
+					if (row_Bround.state == stop) {
+						row_Bround.state = descending;
+					}
 					return true;
 				}
 
@@ -541,6 +544,9 @@ bool collCheakGroundsPlayer() {
 		for (auto& column_Lground : Lgrounds) {
 			for (auto& row_Lround : column_Lground) {
 				if (collide(row_Lround.get_bb(), cube.get_bb())) {
+					if (row_Lround.state == stop) {
+						row_Lround.state = descending;
+					}
 					return true;
 				}
 			}
@@ -550,6 +556,9 @@ bool collCheakGroundsPlayer() {
 		for (auto& column_Tground : Tgrounds) {
 			for (auto& row_Tround : column_Tground) {
 				if (collide(row_Tround.get_bb(), cube.get_bb())) {
+					if (row_Tround.state == stop) {
+						row_Tround.state = descending;
+					}
 					return true;
 				}
 			}
@@ -559,6 +568,9 @@ bool collCheakGroundsPlayer() {
 		for (auto& column_Rground : Rgrounds) {
 			for (auto& row_Rround : column_Rground) {
 				if (collide(row_Rround.get_bb(), cube.get_bb())) {
+					if (row_Rround.state == stop) {
+						row_Rround.state = descending;
+					}
 					return true;
 				}
 			}
