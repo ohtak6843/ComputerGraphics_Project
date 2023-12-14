@@ -1,0 +1,26 @@
+#version 330 core
+
+layout (location = 0) in vec3 vPos;
+layout (location = 1) in vec3 vNormal;
+//layout (location = 2) in vec4 vColor;
+layout (location = 3) in vec2 vTexCoord;
+
+out vec3 FragPos;
+out vec3 Normal;
+out vec4 out_Color;
+out vec2 TexCoord;
+
+uniform mat4 modelTransform;
+uniform mat4 viewTransform;
+uniform mat4 projectionTransform;
+
+void main(void)
+{
+	gl_Position = vec4(vPos, 1.0);
+	FragPos = vPos;
+	Normal = vNormal;
+
+	//out_Color = vColor;
+
+	TexCoord = vTexCoord;
+}
