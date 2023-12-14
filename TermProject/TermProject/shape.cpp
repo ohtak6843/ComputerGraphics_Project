@@ -308,6 +308,20 @@ BB Shape::get_bb() {
 	RBB = glm::vec3(result_matrix* glm::vec4(RBB, 1.0f));
 
 	BB temp_bb = { LTF.x, RBB.x, LTF.y, RBB.y, LTF.z, RBB.z };
+	if (LTF.x > RBB.x) {
+		temp_bb.left = RBB.x;
+		temp_bb.right = LTF.x;
+	}
+
+	if (LTF.y < RBB.y) {
+		temp_bb.top = RBB.y;
+		temp_bb.bottom = LTF.y;
+	}
+
+	if (LTF.z < RBB.z) {
+		temp_bb.front = RBB.z;
+		temp_bb.back = LTF.z;
+	}
 
 	return temp_bb;
 }
