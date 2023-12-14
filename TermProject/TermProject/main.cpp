@@ -62,7 +62,7 @@ public:
 	void jump() {
 		//if (collCheakGroundsPlayer()) {
 			ySpeed = 1.0;
-			y = 1.0;
+			
 		//}
 	}
 	void updateData() {
@@ -70,12 +70,11 @@ public:
 
 		y += ySpeed;
 		ySpeed -= 0.1;
+		initMatrix(5);
+		translate(5, { 0.0f, y, 0.0f });
 		if (collCheakGroundsPlayer()) {
-			y = 0;
 			ySpeed = 0;
 		}
-		initMatrix(6);
-		translate(6, { 0.0f, y, 0.0f });
 	}
 };
 
@@ -435,7 +434,7 @@ void moveGrounds(float moveRate) {
 			moveYCheak = 1.0;
 		}
 		else if (moveYCheak <= -1.0) {
-			playerStandingGround = 2;
+			playerStandingGround = 0;
 			moveXCheak = 1.0;
 			moveYCheak = 0.0;
 		}
@@ -445,7 +444,7 @@ void moveGrounds(float moveRate) {
 			moveYCheak = -1.0;
 		}
 		else if (moveYCheak >= 1.0) {
-			playerStandingGround = 0;
+			playerStandingGround = 2;
 			moveXCheak = -1.0;
 			moveYCheak = 0.0;
 		}
@@ -494,18 +493,18 @@ bool collCheakGroundsPlayer() {
 		}
 		break;
 	case 1:
-		for (auto& column_Tground : Tgrounds) {
-			for (auto& row_Tround : column_Tground) {
-				if (collide(row_Tround.get_bb(), cube.get_bb())) {
+		for (auto& column_Lground : Lgrounds) {
+			for (auto& row_Lround : column_Lground) {
+				if (collide(row_Lround.get_bb(), cube.get_bb())) {
 					return true;
 				}
 			}
 		}
 		break;
 	case 2:
-		for (auto& column_Lground : Lgrounds) {
-			for (auto& row_Lround : column_Lground) {
-				if (collide(row_Lround.get_bb(), cube.get_bb())) {
+		for (auto& column_Tground : Tgrounds) {
+			for (auto& row_Tround : column_Tground) {
+				if (collide(row_Tround.get_bb(), cube.get_bb())) {
 					return true;
 				}
 			}
