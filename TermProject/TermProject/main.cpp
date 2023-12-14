@@ -303,7 +303,7 @@ void main(int argc, char** argv) {
 	light.setPos({ 0.0f, 0.0f, -5.0f });
 
 
-	cube.translate(2, { 0.0f, -4.0f, 0.0f });
+	
 
 
 	for (int i = 0; i < 5; i++) {
@@ -327,6 +327,7 @@ void main(int argc, char** argv) {
 			Bgrounds[i][j].setColor(Cground_color);
 			Bgrounds[i][j].rotate(1, -90.0f, { 1.0f, 0.0f, 0.0f });
 			Bgrounds[i][j].translate(2, { 0.0f, -5.0f, 0.0f });
+			Bgrounds[i][j].translate(2, { 0.0f, 4.0f, 0.0f });
 			Bgrounds[i][j].translate(2, { 2.0f * i, 0.0f, -2.0f * j });
 			Bgrounds[i][j].translate(2, { -2.0f * float(5 - 1) / 2, 0.0f, 0.0f });
 		}
@@ -337,6 +338,7 @@ void main(int argc, char** argv) {
 			Tgrounds[i][j].setColor(Cground_color);
 			Tgrounds[i][j].rotate(1, 90.0f, { 1.0f, 0.0f, 0.0f });
 			Tgrounds[i][j].translate(2, { 0.0f, 5.0f, 0.0f });
+			Tgrounds[i][j].translate(2, { 0.0f, 4.0f, 0.0f });
 			Tgrounds[i][j].translate(2, { 2.0f * i, 0.0f, -2.0f * j });
 			Tgrounds[i][j].translate(2, { -2.0f * float(5 - 1) / 2, 0.0f, 0.0f });
 		}
@@ -347,6 +349,7 @@ void main(int argc, char** argv) {
 			Lgrounds[i][j].setColor(Cground_color);
 			Lgrounds[i][j].rotate(1, 90.0f, { 0.0f, 1.0f, 0.0f });
 			Lgrounds[i][j].translate(2, { -5.0f, 0.0f, 0.0f });
+			Lgrounds[i][j].translate(2, { 0.0f, 4.0f, 0.0f });
 			Lgrounds[i][j].translate(2, { 0.0f, 2.0f * i, -2.0f * j });
 			Lgrounds[i][j].translate(2, { 0.0f, -2.0f * float(5 - 1) / 2, 0.0f });
 		}
@@ -357,6 +360,7 @@ void main(int argc, char** argv) {
 			Rgrounds[i][j].setColor(Cground_color);
 			Rgrounds[i][j].rotate(1, -90.0f, { 0.0f, 1.0f, 0.0f });
 			Rgrounds[i][j].translate(2, { 5.0f, 0.0f, 0.0f });
+			Rgrounds[i][j].translate(2, { 0.0f, 4.0f, 0.0f });
 			Rgrounds[i][j].translate(2, { 0.0f, 2.0f * i, -2.0f * j });
 			Rgrounds[i][j].translate(2, { 0.0f, -2.0f * float(5 - 1) / 2, 0.0f });
 		}
@@ -706,7 +710,7 @@ GLvoid TimerFunction(int value) {
 		for (auto& meteor : meteors) {
 			meteor.updateData();
 		}
-
+		cube.updateData();
 		glutTimerFunc(updateSpeed, TimerFunction, 1);
 		break;
 		// 바닥 생성하기
@@ -722,6 +726,7 @@ GLvoid TimerFunction(int value) {
 				tempG.matrix = Bgrounds[i][0].matrix;
 				tempG.initMatrix(2);
 				tempG.translate(2, { 0.0f, -5.0f, 0.0f });
+				tempG.translate(2, { 0.0f, 4.0f, 0.0f });
 				tempG.translate(2, { 2.0f * i, 0.0f, 0.0f });
 				tempG.translate(2, { -2.0f * float(5 - 1) / 2, 0.0f, 0.0f });
 				tempG.translate(2, { 0.0f, 0.0f, -100.0f });
@@ -732,10 +737,11 @@ GLvoid TimerFunction(int value) {
 				Ground tempG(squ_vertex, squ_normal, squ_color, squ_texCoord);
 				tempG.state = common;
 				tempG.time = 110;
-				tempG.setColor(Cground_color);
+				tempG.setColor(Sground_color);
 				tempG.matrix = Bgrounds[i][0].matrix;
 				tempG.initMatrix(2);
 				tempG.translate(2, { 0.0f, -5.0f, 0.0f });
+				tempG.translate(2, { 0.0f, 4.0f, 0.0f });
 				tempG.translate(2, { 2.0f * i, 0.0f, 0.0f });
 				tempG.translate(2, { -2.0f * float(5 - 1) / 2, 0.0f, 0.0f });
 				tempG.translate(2, { 0.0f, 0.0f, -100.0f });
@@ -754,6 +760,7 @@ GLvoid TimerFunction(int value) {
 				tempG.matrix = Tgrounds[i][0].matrix;
 				tempG.initMatrix(2);
 				tempG.translate(2, { 0.0f, 5.0f, 0.0f });
+				tempG.translate(2, { 0.0f, 4.0f, 0.0f });
 				tempG.translate(2, { 2.0f * i, 0.0f, 0.0f });
 				tempG.translate(2, { -2.0f * float(5 - 1) / 2, 0.0f, 0.0f });
 				tempG.translate(2, { 0.0f, 0.0f, -100.0f });
@@ -768,6 +775,7 @@ GLvoid TimerFunction(int value) {
 				tempG.matrix = Tgrounds[i][0].matrix;
 				tempG.initMatrix(2);
 				tempG.translate(2, { 0.0f, 5.0f, 0.0f });
+				tempG.translate(2, { 0.0f, 4.0f, 0.0f });
 				tempG.translate(2, { 2.0f * i, 0.0f, 0.0f });
 				tempG.translate(2, { -2.0f * float(5 - 1) / 2, 0.0f, 0.0f });
 				tempG.translate(2, { 0.0f, 0.0f, -100.0f });
@@ -786,6 +794,7 @@ GLvoid TimerFunction(int value) {
 				tempG.matrix = Lgrounds[i][0].matrix;
 				tempG.initMatrix(2);
 				tempG.translate(2, { -5.0f, 0.0f, 0.0f });
+				tempG.translate(2, { 0.0f, 4.0f, 0.0f });
 				tempG.translate(2, { 0.0f, 2.0f * i, 0.0f });
 				tempG.translate(2, { 0.0f, -2.0f * float(5 - 1) / 2, 0.0f });
 				tempG.translate(2, { 0.0f, 0.0f, -100.0f });
@@ -800,6 +809,7 @@ GLvoid TimerFunction(int value) {
 				tempG.matrix = Lgrounds[i][0].matrix;
 				tempG.initMatrix(2);
 				tempG.translate(2, { -5.0f, 0.0f, 0.0f });
+				tempG.translate(2, { 0.0f, 4.0f, 0.0f });
 				tempG.translate(2, { 0.0f, 2.0f * i, 0.0f });
 				tempG.translate(2, { 0.0f, -2.0f * float(5 - 1) / 2, 0.0f });
 				tempG.translate(2, { 0.0f, 0.0f, -100.0f });
@@ -818,6 +828,7 @@ GLvoid TimerFunction(int value) {
 				tempG.matrix = Rgrounds[i][0].matrix;
 				tempG.initMatrix(2);
 				tempG.translate(2, { 5.0f, 0.0f, 0.0f });
+				tempG.translate(2, { 0.0f, 4.0f, 0.0f });
 				tempG.translate(2, { 0.0f, 2.0f * i, 0.0f });
 				tempG.translate(2, { 0.0f, -2.0f * float(5 - 1) / 2, 0.0f });
 				tempG.translate(2, { 0.0f, 0.0f, -100.0f });
@@ -832,6 +843,7 @@ GLvoid TimerFunction(int value) {
 				tempG.matrix = Rgrounds[i][0].matrix;
 				tempG.initMatrix(2);
 				tempG.translate(2, { 5.0f, 0.0f, 0.0f });
+				tempG.translate(2, { 0.0f, 4.0f, 0.0f });
 				tempG.translate(2, { 0.0f, 2.0f * i, 0.0f });
 				tempG.translate(2, { 0.0f, -2.0f * float(5 - 1) / 2, 0.0f });
 				tempG.translate(2, { 0.0f, 0.0f, -100.0f });
@@ -851,6 +863,7 @@ GLvoid TimerFunction(int value) {
 		temp.initMatrix(1);
 		temp.initMatrix(2);
 		temp.scale(0, { 0.5f, 0.5f, 0.5f });
+		temp.translate(2, { 0.0f, 4.0f, 0.0f });
 		temp.translate(2, { dist(gen), dist(gen), -100.0f });
 		meteors.push_back(temp);
 		glutTimerFunc(3000, TimerFunction, 3);
