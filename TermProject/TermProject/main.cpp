@@ -26,7 +26,8 @@
 #include <algorithm>
 
 bool collCheakGroundsPlayer();
-
+void collCheakMeteorPlayer();
+void gameOver();
 
 enum GroundState {
 	common = 0,
@@ -87,6 +88,7 @@ public:
 		ySpeed -= 0.05;
 		initMatrix(5);
 		translate(5, { 0.0f, y, 0.0f });
+		if (y < -5.0)gameOver();
 	}
 };
 
@@ -537,6 +539,80 @@ void moveObjects(float moveRate) {
 	}
 }
 
+void gameOver() {
+	game_start = false;
+	Bgrounds.clear();
+	Lgrounds.clear();
+	Tgrounds.clear();
+	Rgrounds.clear();
+	meteors.clear();
+	playerMoveRate = 0.0f;
+	moveXCheak = 1.0;
+	moveYCheak = 0.0;
+	playerStandingGround = 0;
+	cube.y = 0;
+	cube.initMatrix(5);
+	for (int i = 0; i < 5; i++) {
+		Bgrounds.push_back(std::vector<Ground>());
+		Tgrounds.push_back(std::vector<Ground>());
+		Lgrounds.push_back(std::vector<Ground>());
+		Rgrounds.push_back(std::vector<Ground>());
+	}
+
+	for (int i = 0; i < Bgrounds.size(); i++) {
+		for (int j = 0; j < 50; j++) {
+			Bgrounds[i].push_back(Ground(squ_vertex, squ_normal, squ_color, squ_texCoord));
+			Tgrounds[i].push_back(Ground(squ_vertex, squ_normal, squ_color, squ_texCoord));
+			Lgrounds[i].push_back(Ground(squ_vertex, squ_normal, squ_color, squ_texCoord));
+			Rgrounds[i].push_back(Ground(squ_vertex, squ_normal, squ_color, squ_texCoord));
+		}
+	}
+
+	for (int i = 0; i < Bgrounds.size(); i++) {
+		for (int j = 0; j < Bgrounds[i].size(); j++) {
+			Bgrounds[i][j].setColor(Cground_color);
+			Bgrounds[i][j].rotate(1, -90.0f, { 1.0f, 0.0f, 0.0f });
+			Bgrounds[i][j].translate(2, { 0.0f, -5.0f, 0.0f });
+			Bgrounds[i][j].translate(2, { 0.0f, 4.5f, 0.0f });
+			Bgrounds[i][j].translate(2, { 2.0f * i, 0.0f, -2.0f * j });
+			Bgrounds[i][j].translate(2, { -2.0f * float(5 - 1) / 2, 0.0f, 0.0f });
+		}
+	}
+
+	for (int i = 0; i < Tgrounds.size(); i++) {
+		for (int j = 0; j < Tgrounds[i].size(); j++) {
+			Tgrounds[i][j].setColor(Cground_color);
+			Tgrounds[i][j].rotate(1, 90.0f, { 1.0f, 0.0f, 0.0f });
+			Tgrounds[i][j].translate(2, { 0.0f, 5.0f, 0.0f });
+			Tgrounds[i][j].translate(2, { 0.0f, 4.5f, 0.0f });
+			Tgrounds[i][j].translate(2, { 2.0f * i, 0.0f, -2.0f * j });
+			Tgrounds[i][j].translate(2, { -2.0f * float(5 - 1) / 2, 0.0f, 0.0f });
+		}
+	}
+
+	for (int i = 0; i < Lgrounds.size(); i++) {
+		for (int j = 0; j < Lgrounds[i].size(); j++) {
+			Lgrounds[i][j].setColor(Cground_color);
+			Lgrounds[i][j].rotate(1, 90.0f, { 0.0f, 1.0f, 0.0f });
+			Lgrounds[i][j].translate(2, { -5.0f, 0.0f, 0.0f });
+			Lgrounds[i][j].translate(2, { 0.0f, 4.5f, 0.0f });
+			Lgrounds[i][j].translate(2, { 0.0f, 2.0f * i, -2.0f * j });
+			Lgrounds[i][j].translate(2, { 0.0f, -2.0f * float(5 - 1) / 2, 0.0f });
+		}
+	}
+
+	for (int i = 0; i < Rgrounds.size(); i++) {
+		for (int j = 0; j < Rgrounds[i].size(); j++) {
+			Rgrounds[i][j].setColor(Cground_color);
+			Rgrounds[i][j].rotate(1, -90.0f, { 0.0f, 1.0f, 0.0f });
+			Rgrounds[i][j].translate(2, { 5.0f, 0.0f, 0.0f });
+			Rgrounds[i][j].translate(2, { 0.0f, 4.5f, 0.0f });
+			Rgrounds[i][j].translate(2, { 0.0f, 2.0f * i, -2.0f * j });
+			Rgrounds[i][j].translate(2, { 0.0f, -2.0f * float(5 - 1) / 2, 0.0f });
+		}
+	}
+}
+
 bool collCheakGroundsPlayer() {
 	switch (playerStandingGround) {
 	case 0:
@@ -597,7 +673,7 @@ bool collCheakGroundsPlayer() {
 void collCheakMeteorPlayer() {
 	for (auto& meteor : meteors) {
 		if (collide(meteor.get_bb(), cube.get_bb())) {
-			
+			gameOver();
 		}
 	}
 }
@@ -687,17 +763,19 @@ GLvoid Keyboard(unsigned char key, int x, int y) {
 		exit(0);
 		break;
 	case 'a':
-		moveObjects(0.2f);
+		if (game_start)
+			moveObjects(0.2f);
 		break;
 	case 'd':
-		moveObjects(-0.2f);
+		if (game_start)
+			moveObjects(-0.2f);
 		break;
-	case 'w':
-		cube.jump();
+	case ' ':
+		if(game_start) cube.jump();
+		else game_start = true;
+
 		break;
-	case 't':
-		game_start = true;
-		break;
+
 	default:
 		break;
 	}
@@ -707,6 +785,15 @@ GLvoid Keyboard(unsigned char key, int x, int y) {
 
 GLvoid SpecialKey(int key, int x, int y) {
 	switch (key) {
+	case GLUT_KEY_RIGHT:
+		if (game_start)
+			moveObjects(-0.2f);
+		break;
+	case GLUT_KEY_LEFT:
+		if (game_start)
+			moveObjects(0.2f);
+		break;
+
 	default:
 		break;
 	}
@@ -721,8 +808,10 @@ GLvoid TimerFunction(int value) {
 	case 1:
 		if (game_start == false) {
 			glutTimerFunc(updateSpeed, TimerFunction, 1);
+
 			break;
 		}
+		collCheakMeteorPlayer();
 		for (int i = 0; i < Bgrounds.size(); i++) {
 			for (int j = 0; j < Bgrounds[i].size(); j++) {
 				Bgrounds[i][j].updateData();
