@@ -131,7 +131,7 @@ public:
 		--time;
 
 		if (state == descending) {
-			Shape::translate(2, { 0.0f, -0.5f, 0.0f });
+			Shape::translate(5, { 0.0f, -0.5f, 0.0f });
 			--gravity_time;
 		}
 	}
