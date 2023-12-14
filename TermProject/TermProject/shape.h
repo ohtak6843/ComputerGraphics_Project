@@ -20,12 +20,13 @@ protected:
 	std::vector<GLfloat> vertex;
 	std::vector<GLfloat> normal;
 	std::vector<GLfloat> texCoord;
-	std::vector<glm::mat4> matrix;
 
 	BB bb;
 
 public:
+	std::vector<glm::mat4> matrix;
 	std::vector<GLfloat> color;
+
 
 
 	Shape();
