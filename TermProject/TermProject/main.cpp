@@ -137,7 +137,7 @@ public:
 		--time;
 
 		if (state == descending) {
-			Shape::translate(5, {0.0f, -0.5f, 0.0f});
+			Shape::translate(5, {0.0f, -0.05f, 0.0f});
 			--gravity_time;
 		}
 	}
@@ -404,12 +404,6 @@ void main(int argc, char** argv) {
 	data = stbi_load("ground.bmp", &widthImage, &heightImage, &numberOfChannel, 0);
 	glTexImage2D(GL_TEXTURE_2D, 0, 3, widthImage, heightImage, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 	stbi_image_free(data);
-
-
-	glutTimerFunc(updateSpeed, TimerFunction, 1);
-	glutTimerFunc(updateSpeed * 2, TimerFunction, 2);
-	glutTimerFunc(3000, TimerFunction, 3);
-	glutTimerFunc(20000, TimerFunction, 4);
 
 
 	glutDisplayFunc(drawScene); // 출력 함수의 지정
@@ -799,8 +793,13 @@ GLvoid Keyboard(unsigned char key, int x, int y) {
 		break;
 	case ' ':
 		if(game_start) cube.jump();
-		else game_start = true;
-
+		else {
+			game_start = true;
+			glutTimerFunc(updateSpeed, TimerFunction, 1);
+			glutTimerFunc(updateSpeed * 2, TimerFunction, 2);
+			glutTimerFunc(3000, TimerFunction, 3);
+			glutTimerFunc(20000, TimerFunction, 4);
+		}
 		break;
 
 	default:
@@ -833,11 +832,7 @@ GLvoid TimerFunction(int value) {
 	switch (value) {
 		// 데이터 업데이트
 	case 1:
-		if (game_start == false) {
-			glutTimerFunc(updateSpeed, TimerFunction, 1);
-
-			break;
-		}
+	
 		collCheakMeteorPlayer();
 		for (int i = 0; i < Bgrounds.size(); i++) {
 			for (int j = 0; j < Bgrounds[i].size(); j++) {
@@ -883,14 +878,11 @@ GLvoid TimerFunction(int value) {
 		}
 
 		cube.updateData();
-		glutTimerFunc(updateSpeed, TimerFunction, 1);
+		if (game_start) glutTimerFunc(updateSpeed, TimerFunction, 1);
 		break;
 		// 바닥 생성하기
 	case 2:
-		if (game_start == false) {
-			glutTimerFunc(updateSpeed * 2, TimerFunction, 2);
-			break;
-		}
+	
 		for (int i = 0; i < Bgrounds.size(); i++) {
 			int randint = dist_rand(gen);
 			// common 바닥 생성
@@ -1018,15 +1010,12 @@ GLvoid TimerFunction(int value) {
 				Rgrounds[i].push_back(tempG);
 			}
 		}
-		glutTimerFunc(updateSpeed * 2, TimerFunction, 2);
+		if (game_start) glutTimerFunc(updateSpeed * 2, TimerFunction, 2);
 		break;
 
 		// 메테오 생성하기
 	case 3:
-		if (game_start == false) {
-			glutTimerFunc(3000, TimerFunction, 3);
-			break;
-		}
+	
 	{
 		Meteor temp("moon.obj");
 		temp.setColor({ 1.0f, 0.0f, 0.0f, 1.0f });
@@ -1038,14 +1027,11 @@ GLvoid TimerFunction(int value) {
 		temp.translate(2, { 0.0f, 4.5f, 0.0f });
 		temp.translate(2, { dist(gen), dist(gen), -150.0f });
 		meteors.push_back(temp);
-		glutTimerFunc(1000, TimerFunction, 3);
+		if (game_start) glutTimerFunc(1000, TimerFunction, 3);
 		break;
 	}
 	case 4:
-		if (game_start == false) {
-			glutTimerFunc(20000, TimerFunction, 4);
-			break;
-		}
+		
 		if (stage < 5) {
 			stage++;
 			Cground_color = { dist_RGB(gen), dist_RGB(gen), dist_RGB(gen), 1.0f };
@@ -1078,7 +1064,7 @@ GLvoid TimerFunction(int value) {
 				}
 			}
 		}
-		glutTimerFunc(20000, TimerFunction, 4);
+		if(game_start) glutTimerFunc(20000, TimerFunction, 4);
 		break;
 	default:
 		break;
