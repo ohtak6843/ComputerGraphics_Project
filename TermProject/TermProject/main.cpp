@@ -185,9 +185,6 @@ Display display;
 
 Light light;
 
-Shape squ(squ_vertex, squ_normal, squ_color, squ_texCoord);
-Shape test(squ_vertex, squ_normal, squ_color, squ_texCoord);
-
 Player cube(cube_vertex, cube_normal, cube_color, cube_texCoord);
 
 Shape sphere("moon.obj");
@@ -234,17 +231,12 @@ void main(int argc, char** argv) {
 	glEnable(GL_BLEND);
 	
 	sphere.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
-	//sphere.scale(0, {0.25f, 0.25f, 0.25f});
 
 	display.cameraPos = { 0.0f, 3.0f, 10.0f };
 	light.setPos({ 0.0f, 0.0f, -5.0f });
 
-	
-	squ.scale(0, { 3.0f, 3.0f, 1.0f });
-	squ.setColor({ 0.0f, 1.0f, 1.0f, 1.0f});
 
-	test.scale(0, { 3.0f, 3.0f, 1.0f });
-	test.translate(2, { 0.0f, 0.0f, 1.0f });
+	cube.translate(2, { 0.0f, -4.0f, 0.0f });
 
 
 	for (int i = 0; i < 5; i++) {
@@ -268,7 +260,6 @@ void main(int argc, char** argv) {
 			Bgrounds[i][j].setColor({ 0.0f, 1.0f, 1.0f, 1.0f });
 			Bgrounds[i][j].rotate(1, -90.0f, { 1.0f, 0.0f, 0.0f });
 			Bgrounds[i][j].translate(2, { 0.0f, -5.0f, 0.0f });
-			Bgrounds[i][j].translate(2, { 0.0f, 4.0f, 0.0f });
 			Bgrounds[i][j].translate(2, { 2.0f * i, 0.0f, -2.0f * j });
 			Bgrounds[i][j].translate(2, { -2.0f * float(5 - 1) / 2, 0.0f, 0.0f});
 		}
@@ -279,7 +270,6 @@ void main(int argc, char** argv) {
 			Tgrounds[i][j].setColor({ 0.0f, 1.0f, 1.0f, 1.0f });
 			Tgrounds[i][j].rotate(1, 90.0f, { 1.0f, 0.0f, 0.0f });
 			Tgrounds[i][j].translate(2, { 0.0f, 5.0f, 0.0f });
-			Tgrounds[i][j].translate(2, { 0.0f, 4.0f, 0.0f });
 			Tgrounds[i][j].translate(2, { 2.0f * i, 0.0f, -2.0f * j });
 			Tgrounds[i][j].translate(2, { -2.0f * float(5 - 1) / 2, 0.0f, 0.0f });
 		}
@@ -290,7 +280,6 @@ void main(int argc, char** argv) {
 			Lgrounds[i][j].setColor({ 0.0f, 1.0f, 1.0f, 1.0f });
 			Lgrounds[i][j].rotate(1, 90.0f, { 0.0f, 1.0f, 0.0f });
 			Lgrounds[i][j].translate(2, { -5.0f, 0.0f, 0.0f });
-			Lgrounds[i][j].translate(2, { 0.0f, 4.0f, 0.0f });
 			Lgrounds[i][j].translate(2, { 0.0f, 2.0f * i, -2.0f * j });
 			Lgrounds[i][j].translate(2, { 0.0f, -2.0f * float(5 - 1) / 2, 0.0f });
 		}
@@ -301,7 +290,6 @@ void main(int argc, char** argv) {
 			Rgrounds[i][j].setColor({ 0.0f, 1.0f, 1.0f, 1.0f });
 			Rgrounds[i][j].rotate(1, -90.0f, { 0.0f, 1.0f, 0.0f });
 			Rgrounds[i][j].translate(2, { 5.0f, 0.0f, 0.0f });
-			Rgrounds[i][j].translate(2, { 0.0f, 4.0f, 0.0f });
 			Rgrounds[i][j].translate(2, { 0.0f, 2.0f * i, -2.0f * j });
 			Rgrounds[i][j].translate(2, { 0.0f, -2.0f * float(5 - 1) / 2, 0.0f });
 		}
@@ -330,6 +318,8 @@ void main(int argc, char** argv) {
 	glutSpecialFunc(SpecialKey);
 	glutMainLoop(); // 이벤트 처리 시작
 }
+
+
 float playerMoveRate = 0.0f;
 float moveXCheak = 1.0;
 float moveYCheak = 0.0;
@@ -449,6 +439,8 @@ void moveGrounds(float moveRate) {
 		}
 	}
 }
+
+
 //--- 콜백 함수: 그리기 콜백 함수
 GLvoid drawScene() {
 	glClearColor(rColor, gColor, bColor, 1.0f);
@@ -462,28 +454,24 @@ GLvoid drawScene() {
 
 	for (auto& column_Bground : Bgrounds) {
 		for (auto& row_Bround : column_Bground) {
-			row_Bround.updateBuffer();
 			row_Bround.draw(shader.ID, GL_TRIANGLES);
 		}
 	}
 
 	for (auto& column_Tground : Tgrounds) {
 		for (auto& row_Tround : column_Tground) {
-			row_Tround.updateBuffer();
 			row_Tround.draw(shader.ID, GL_TRIANGLES);
 		}
 	}
 
 	for (auto& column_Lground : Lgrounds) {
 		for (auto& row_Lround : column_Lground) {
-			row_Lround.updateBuffer();
 			row_Lround.draw(shader.ID, GL_TRIANGLES);
 		}
 	}
 
 	for (auto& column_Rground : Rgrounds) {
 		for (auto& row_Rround : column_Rground) {
-			row_Rround.updateBuffer();
 			row_Rround.draw(shader.ID, GL_TRIANGLES);
 		}
 	}
