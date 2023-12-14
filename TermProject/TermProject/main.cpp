@@ -27,10 +27,6 @@
 
 bool collCheakGroundsPlayer();
 
-enum PlayerState {
-
-};
-
 
 enum GroundState {
 	common = 0,
@@ -98,7 +94,7 @@ class Ground : public Shape {
 private:
 
 public:
-	int time = 10;
+	int time = 300;
 
 	GroundState state = common;
 	int gravity_time = 5;
@@ -130,7 +126,7 @@ public:
 
 
 	void updateData() {
-		Shape::translate(2, { 0.0f, 0.0f, 1.0f });
+		Shape::translate(2, { 0.0f, 0.0f, 0.5f });
 		--time;
 
 		if (state == descending) {
@@ -145,7 +141,7 @@ class Meteor : public Shape {
 private:
 
 public:
-	int time;
+	int time = 100;
 
 	Meteor() {
 		vao = vbo[0] = vbo[1] = vbo[2] = vbo[3] = NULL;
@@ -703,33 +699,49 @@ GLvoid TimerFunction(int value) {
 	switch (value) {
 		// µ•¿Ã≈Õ æ˜µ•¿Ã∆Æ
 	case 1:
-		for (auto& column_Bground : Bgrounds) {
-			for (auto& row_Bground : column_Bground) {
-				row_Bground.updateData();
+		for (int i = 0; i < Bgrounds.size(); i++) {
+			for (int j = 0; j < Bgrounds[i].size(); j++) {
+				Bgrounds[i][j].updateData();
+				if (Bgrounds[i][j].time < 0) {
+					Bgrounds[i].erase(Bgrounds[i].begin() + j);
+				}
 			}
 		}
 
-		for (auto& column_Tground : Tgrounds) {
-			for (auto& row_Tground : column_Tground) {
-				row_Tground.updateData();
+		for (int i = 0; i < Tgrounds.size(); i++) {
+			for (int j = 0; j < Tgrounds[i].size(); j++) {
+				Tgrounds[i][j].updateData();
+				if (Tgrounds[i][j].time < 0) {
+					Tgrounds[i].erase(Tgrounds[i].begin() + j);
+				}
 			}
 		}
 
-		for (auto& column_Lground : Lgrounds) {
-			for (auto& row_Lground : column_Lground) {
-				row_Lground.updateData();
+		for (int i = 0; i < Lgrounds.size(); i++) {
+			for (int j = 0; j < Lgrounds[i].size(); j++) {
+				Lgrounds[i][j].updateData();
+				if (Lgrounds[i][j].time < 0) {
+					Lgrounds[i].erase(Lgrounds[i].begin() + j);
+				}
 			}
 		}
 
-		for (auto& column_Rground : Rgrounds) {
-			for (auto& row_Rground : column_Rground) {
-				row_Rground.updateData();
+		for (int i = 0; i < Rgrounds.size(); i++) {
+			for (int j = 0; j < Rgrounds[i].size(); j++) {
+				Rgrounds[i][j].updateData();
+				if (Rgrounds[i][j].time < 0) {
+					Rgrounds[i].erase(Rgrounds[i].begin() + j);
+				}
 			}
 		}
 
-		for (auto& meteor : meteors) {
-			meteor.updateData();
+		for (int i = 0; i < meteors.size(); i++) {
+			meteors[i].updateData();
+			if (meteors[i].time < 0) {
+				meteors.erase(meteors.begin() + i);
+			}
 		}
+
 		cube.updateData();
 		glutTimerFunc(updateSpeed, TimerFunction, 1);
 		break;
@@ -741,7 +753,6 @@ GLvoid TimerFunction(int value) {
 			if (randint < 40) {
 				Ground tempG(squ_vertex, squ_normal, squ_color, squ_texCoord);
 				tempG.state = common;
-				tempG.time = 110;
 				tempG.setColor(Cground_color);
 				tempG.matrix = Bgrounds[i][0].matrix;
 				tempG.initMatrix(2);
@@ -756,7 +767,6 @@ GLvoid TimerFunction(int value) {
 			else if (randint < 60) {
 				Ground tempG(squ_vertex, squ_normal, squ_color, squ_texCoord);
 				tempG.state = stop;
-				tempG.time = 110;
 				tempG.setColor(Sground_color);
 				tempG.matrix = Bgrounds[i][0].matrix;
 				tempG.initMatrix(2);
@@ -772,10 +782,9 @@ GLvoid TimerFunction(int value) {
 		for (int i = 0; i < Tgrounds.size(); i++) {
 			int randint = dist_rand(gen);
 			// common πŸ¥⁄ ª˝º∫
-			if (randint < 40) {
+			if (randint < 30) {
 				Ground tempG(squ_vertex, squ_normal, squ_color, squ_texCoord);
 				tempG.state = common;
-				tempG.time = 110;
 				tempG.setColor(Cground_color);
 				tempG.matrix = Tgrounds[i][0].matrix;
 				tempG.initMatrix(2);
@@ -787,10 +796,9 @@ GLvoid TimerFunction(int value) {
 				Tgrounds[i].push_back(tempG);
 			}
 			// ∂≥æÓ¡ˆ¥¬ πŸ¥⁄ ª˝º∫
-			else if (randint < 60) {
+			else if (randint < 50) {
 				Ground tempG(squ_vertex, squ_normal, squ_color, squ_texCoord);
 				tempG.state = stop;
-				tempG.time = 110;
 				tempG.setColor(Sground_color);
 				tempG.matrix = Tgrounds[i][0].matrix;
 				tempG.initMatrix(2);
@@ -806,10 +814,9 @@ GLvoid TimerFunction(int value) {
 		for (int i = 0; i < Lgrounds.size(); i++) {
 			int randint = dist_rand(gen);
 			// common πŸ¥⁄ ª˝º∫
-			if (randint < 40) {
+			if (randint < 30) {
 				Ground tempG(squ_vertex, squ_normal, squ_color, squ_texCoord);
 				tempG.state = common;
-				tempG.time = 110;
 				tempG.setColor(Cground_color);
 				tempG.matrix = Lgrounds[i][0].matrix;
 				tempG.initMatrix(2);
@@ -821,10 +828,9 @@ GLvoid TimerFunction(int value) {
 				Lgrounds[i].push_back(tempG);
 			}
 			// ∂≥æÓ¡ˆ¥¬ πŸ¥⁄ ª˝º∫
-			else if (randint < 60) {
+			else if (randint < 50) {
 				Ground tempG(squ_vertex, squ_normal, squ_color, squ_texCoord);
 				tempG.state = stop;
-				tempG.time = 110;
 				tempG.setColor(Sground_color);
 				tempG.matrix = Lgrounds[i][0].matrix;
 				tempG.initMatrix(2);
@@ -840,10 +846,9 @@ GLvoid TimerFunction(int value) {
 		for (int i = 0; i < Rgrounds.size(); i++) {
 			int randint = dist_rand(gen);
 			// common πŸ¥⁄ ª˝º∫
-			if (randint < 40) {
+			if (randint < 30) {
 				Ground tempG(squ_vertex, squ_normal, squ_color, squ_texCoord);
 				tempG.state = common;
-				tempG.time = 110;
 				tempG.setColor(Cground_color);
 				tempG.matrix = Rgrounds[i][0].matrix;
 				tempG.initMatrix(2);
@@ -855,10 +860,9 @@ GLvoid TimerFunction(int value) {
 				Rgrounds[i].push_back(tempG);
 			}
 			// ∂≥æÓ¡ˆ¥¬ πŸ¥⁄ ª˝º∫
-			else if (randint < 60) {
+			else if (randint < 50) {
 				Ground tempG(squ_vertex, squ_normal, squ_color, squ_texCoord);
 				tempG.state = stop;
-				tempG.time = 110;
 				tempG.setColor(Sground_color);
 				tempG.matrix = Rgrounds[i][0].matrix;
 				tempG.initMatrix(2);
