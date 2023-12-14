@@ -34,6 +34,16 @@ const std::vector<float> squ_vertex = {
 };
 
 
+const std::vector<float> bg_vertex = {
+	-1.0f, 1.0f, 0.999f,
+	-1.0f, -1.0f, 0.999f,
+	1.0f, -1.0f, 0.999f,
+	-1.0f, 1.0f, 0.999f,
+	1.0f, -1.0f, 0.999f,
+	1.0f, 1.0f, 0.999f,
+};
+
+
 const std::vector<float> squ_normal = {
 	0.0f, 0.0f, 1.0f,
 	0.0f, 0.0f, 1.0f,

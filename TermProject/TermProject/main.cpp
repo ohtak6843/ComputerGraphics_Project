@@ -235,6 +235,7 @@ GLvoid TimerFunction(int value);
 // 전역변수
 Shader shader;
 Shader Tshader;
+Shader BGshader;
 
 
 GLfloat rColor = 0.0f;
@@ -246,6 +247,9 @@ Display display;
 Light light;
 
 Player cube(cube_vertex, cube_normal, cube_color, cube_texCoord);
+
+
+Shape bg(bg_vertex, squ_normal, squ_color, squ_texCoord);
 
 std::vector<std::vector<Ground>> Bgrounds;
 std::vector<std::vector<Ground>> Tgrounds;
@@ -290,6 +294,7 @@ void main(int argc, char** argv) {
 
 	shader.make_shaderProgram("vertex.glsl", "fragment.glsl");
 	Tshader.make_shaderProgram("T_vertex.glsl", "T_fragment.glsl");
+	BGshader.make_shaderProgram("BG_vertex.glsl", "BG_fragment.glsl");
 
 
 	glEnable(GL_DEPTH_TEST); // 은면 제거
@@ -372,10 +377,13 @@ void main(int argc, char** argv) {
 
 
 	stbi_set_flip_vertically_on_load(true);
-	data = stbi_load("alpha.bmp", &widthImage, &heightImage, &numberOfChannel, 0);
+	data = stbi_load("background.bmp", &widthImage, &heightImage, &numberOfChannel, 0);
 	glTexImage2D(GL_TEXTURE_2D, 0, 3, widthImage, heightImage, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 	stbi_image_free(data);
 
+
+	//bg.scale(0, { 100.0f, 100.0f, 100.0f });
+	//bg.translate(2, { 0.0f, 0.0f, -90.0f });
 
 	glutTimerFunc(updateSpeed, TimerFunction, 1);
 	glutTimerFunc(updateSpeed * 2, TimerFunction, 2);
@@ -632,7 +640,9 @@ GLvoid drawScene() {
 
 	glBindTexture(GL_TEXTURE_2D, texture);
 
-	cube.draw(Tshader.ID, GL_TRIANGLES);
+	cube.draw(shader.ID, GL_TRIANGLES);
+
+	bg.draw(BGshader.ID, GL_TRIANGLES);
 
 	glutSwapBuffers(); // 화면에 출력하기
 }
