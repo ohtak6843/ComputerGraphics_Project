@@ -25,6 +25,7 @@
 #include <vector>
 #include <algorithm>
 
+bool collCheakGroundsPlayer();
 
 class Player : public Shape {
 private:
@@ -59,16 +60,17 @@ public:
 		bb = { -1.0f, 1.0f, 1.0f, -1.0f, 1.0f, -1.0f };
 	}
 	void jump() {
-		if (y <= 0.0) {
+		//if (collCheakGroundsPlayer()) {
 			ySpeed = 1.0;
-		}
+			y = 1.0;
+		//}
 	}
 	void updateData() {
 		Shape::updateData();
 
 		y += ySpeed;
-		ySpeed -= 0.2;
-		if (y <= 0) {
+		ySpeed -= 0.1;
+		if (collCheakGroundsPlayer()) {
 			y = 0;
 			ySpeed = 0;
 		}
@@ -256,7 +258,7 @@ void main(int argc, char** argv) {
 	sphere.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
 	//sphere.scale(0, {0.25f, 0.25f, 0.25f});
 
-	display.cameraPos = { 0.0f, 3.0f, 10.0f };
+	display.cameraPos = { 0.0f, 3.0f, 20.0f };
 	light.setPos({ 0.0f, 0.0f, -5.0f });
 
 	
@@ -353,6 +355,7 @@ void main(int argc, char** argv) {
 float playerMoveRate = 0.0f;
 float moveXCheak = 1.0;
 float moveYCheak = 0.0;
+int playerStandingGround = 0;
 void moveGrounds(float moveRate) {
 	playerMoveRate += moveRate;
 	if (playerMoveRate > 4.0) {
@@ -381,18 +384,22 @@ void moveGrounds(float moveRate) {
 			}
 		}
 		if (moveXCheak >= 1.0) {
+			playerStandingGround = 1;
 			moveXCheak = 0.0;
 			moveYCheak = -1.0;
 		}
 		else if (moveYCheak <= -1.0) {
+			playerStandingGround = 2;
 			moveXCheak = -1.0;
 			moveYCheak = 0.0;
 		}
 		else if (moveXCheak <= -1.0) {
+			playerStandingGround = 3;
 			moveXCheak = 0.0;
 			moveYCheak = 1.0;
 		}
 		else if (moveYCheak >= 1.0) {
+			playerStandingGround = 0;
 			moveXCheak = 1.0;
 			moveYCheak = 0.0;
 		}
@@ -423,18 +430,22 @@ void moveGrounds(float moveRate) {
 			}
 		}
 		if (moveXCheak >= 1.0) {
+			playerStandingGround = 3;
 			moveXCheak = 0.0;
 			moveYCheak = 1.0;
 		}
 		else if (moveYCheak <= -1.0) {
+			playerStandingGround = 2;
 			moveXCheak = 1.0;
 			moveYCheak = 0.0;
 		}
 		else if (moveXCheak <= -1.0) {
+			playerStandingGround = 1;
 			moveXCheak = 0.0;
 			moveYCheak = -1.0;
 		}
 		else if (moveYCheak >= 1.0) {
+			playerStandingGround = 0;
 			moveXCheak = -1.0;
 			moveYCheak = 0.0;
 		}
@@ -470,6 +481,53 @@ void moveGrounds(float moveRate) {
 	}
 }
 
+bool collCheakGroundsPlayer() {
+	switch (playerStandingGround) {
+	case 0:
+		for (auto& column_Bground : Bgrounds) {
+			for (auto& row_Bround : column_Bground) {
+				if (collide(row_Bround.get_bb(), cube.get_bb())) {
+					return true;
+				}
+
+			}
+		}
+		break;
+	case 1:
+		for (auto& column_Tground : Tgrounds) {
+			for (auto& row_Tround : column_Tground) {
+				if (collide(row_Tround.get_bb(), cube.get_bb())) {
+					return true;
+				}
+			}
+		}
+		break;
+	case 2:
+		for (auto& column_Lground : Lgrounds) {
+			for (auto& row_Lround : column_Lground) {
+				if (collide(row_Lround.get_bb(), cube.get_bb())) {
+					return true;
+				}
+			}
+		}
+		break;
+	case 3:
+		for (auto& column_Rground : Rgrounds) {
+			for (auto& row_Rround : column_Rground) {
+				if (collide(row_Rround.get_bb(), cube.get_bb())) {
+					return true;
+				}
+			}
+		}
+		break;
+	default:
+		return false;
+		break;
+	}
+	return false;
+}		
+
+		
 
 //--- 콜백 함수: 그리기 콜백 함수
 GLvoid drawScene() {
@@ -579,7 +637,7 @@ GLvoid TimerFunction(int value) {
 	switch (value) {
 	case 1:
 		cube.updateData();
-		glutTimerFunc(50, TimerFunction, 1);
+		glutTimerFunc(10, TimerFunction, 1);
 		break;
 	default:
 		break;
