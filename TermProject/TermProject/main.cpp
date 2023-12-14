@@ -72,21 +72,24 @@ public:
 		bb = { -1.0f, 1.0f, 1.0f, -1.0f, 1.0f, -1.0f };
 	}
 	void jump() {
-		//if (collCheakGroundsPlayer()) {
+		if (collCheakGroundsPlayer()) {
 		ySpeed = 1.0;
-
-		//}
+		y += ySpeed;
+		initMatrix(5);
+		translate(5, { 0.0f, y, 0.0f });
+		}
 	}
 	void updateData() {
 		Shape::updateData();
 
+		
+		if (collCheakGroundsPlayer()) {
+			ySpeed = 0;
+		}
 		y += ySpeed;
 		ySpeed -= 0.1;
 		initMatrix(5);
 		translate(5, { 0.0f, y, 0.0f });
-		if (collCheakGroundsPlayer()) {
-			ySpeed = 0;
-		}
 	}
 };
 
@@ -747,7 +750,7 @@ GLvoid TimerFunction(int value) {
 			// ¶³¾îÁö´Â ¹Ù´Ú »ý¼º
 			else if (randint < 60) {
 				Ground tempG(squ_vertex, squ_normal, squ_color, squ_texCoord);
-				tempG.state = common;
+				tempG.state = stop;
 				tempG.time = 110;
 				tempG.setColor(Sground_color);
 				tempG.matrix = Bgrounds[i][0].matrix;
