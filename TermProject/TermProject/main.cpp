@@ -566,6 +566,7 @@ void gameOver() {
 	Tgrounds.clear();
 	Rgrounds.clear();
 	meteors.clear();
+	stage = 1;
 	playerMoveRate = 0.0f;
 	moveXCheak = 1.0;
 	moveYCheak = 0.0;
