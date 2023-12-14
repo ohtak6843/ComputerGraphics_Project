@@ -306,9 +306,6 @@ void main(int argc, char** argv) {
 	light.setPos({ 0.0f, 0.0f, -5.0f });
 
 
-	
-
-
 	for (int i = 0; i < 5; i++) {
 		Bgrounds.push_back(std::vector<Ground>());
 		Tgrounds.push_back(std::vector<Ground>());
@@ -403,10 +400,13 @@ float playerMoveRate = 0.0f;
 float moveXCheak = 1.0;
 float moveYCheak = 0.0;
 int playerStandingGround = 0;
-void moveGrounds(float moveRate) {
+void moveObjects(float moveRate) {
 	playerMoveRate += moveRate;
 	if (playerMoveRate > 4.0) {
 		playerMoveRate = -4.0;
+		for (auto& m : meteors) {
+			m.rotate(4, 90.0f, { 0.0f, 0.0f, 1.0f });	
+		}
 		for (auto& column_Bground : Bgrounds) {
 			for (auto& row_Bround : column_Bground) {
 				row_Bround.rotate(4, 90.0f, { 0.0f, 0.0f, 1.0f });
@@ -453,6 +453,9 @@ void moveGrounds(float moveRate) {
 	}
 	else if (playerMoveRate < -4.0) {
 		playerMoveRate = 4.0;
+		for (auto& m : meteors) {
+			m.rotate(4, 90.0f, { 0.0f, 0.0f, 1.0f });
+		}
 		for (auto& column_Bground : Bgrounds) {
 			for (auto& row_Bround : column_Bground) {
 				row_Bround.rotate(4, -90.0f, { 0.0f, 0.0f, 1.0f });
@@ -498,9 +501,11 @@ void moveGrounds(float moveRate) {
 		}
 	}
 	else {
+		for (auto& m : meteors) {
+			m.translate(3, { moveXCheak * moveRate, moveYCheak * moveRate, 0.0f });
+		}
 		for (auto& column_Bground : Bgrounds) {
 			for (auto& row_Bround : column_Bground) {
-
 				row_Bround.translate(3, { moveXCheak * moveRate, moveYCheak * moveRate, 0.0f });
 			}
 		}
@@ -669,10 +674,10 @@ GLvoid Keyboard(unsigned char key, int x, int y) {
 		exit(0);
 		break;
 	case 'a':
-		moveGrounds(0.2f);
+		moveObjects(0.2f);
 		break;
 	case 'd':
-		moveGrounds(-0.2f);
+		moveObjects(-0.2f);
 		break;
 	case 'w':
 		cube.jump();
