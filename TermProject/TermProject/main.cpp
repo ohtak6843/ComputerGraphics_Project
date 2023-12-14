@@ -595,6 +595,13 @@ bool collCheakGroundsPlayer() {
 	}
 	return false;
 }
+void collCheakMeteorPlayer() {
+	for (auto& meteor : meteors) {
+		if (collide(meteor.get_bb(), cube.get_bb())) {
+			
+		}
+	}
+}
 
 
 
@@ -899,9 +906,9 @@ GLvoid TimerFunction(int value) {
 		temp.initMatrix(2);
 		temp.scale(0, { 0.5f, 0.5f, 0.5f });
 		temp.translate(2, { 0.0f, 4.5f, 0.0f });
-		temp.translate(2, { dist(gen), dist(gen), -100.0f });
+		temp.translate(2, { dist(gen), dist(gen), -150.0f });
 		meteors.push_back(temp);
-		glutTimerFunc(3000, TimerFunction, 3);
+		glutTimerFunc(1000, TimerFunction, 3);
 		break;
 	}
 	default:
